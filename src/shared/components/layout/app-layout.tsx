@@ -1,6 +1,9 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Loader } from "@/shared/components/ui/loader";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { AppSidebar } from "./app-sidebar";
 
 interface AppLayoutProps {
@@ -11,6 +14,23 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ title, description, actions, children }: AppLayoutProps) {
+  const { hydrated, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (hydrated && !isAuthenticated) {
+      void navigate({ to: "/login", replace: true });
+    }
+  }, [hydrated, isAuthenticated, navigate]);
+
+  if (!hydrated || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader label="Verificando sessão..." />
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
