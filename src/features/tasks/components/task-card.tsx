@@ -20,9 +20,9 @@ export function TaskCard({ task, onEdit, onDelete, onComplete, busy = false }: T
   const late = !done && isOverdue(task.dueDate);
 
   return (
-    <article className="surface-card flex flex-col gap-4 p-5 transition-shadow duration-200 hover:shadow-lg">
+    <article className="surface-card flex min-w-0 flex-col gap-4 p-5 transition-shadow duration-200 hover:shadow-lg">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3
             className={cn(
               "truncate text-base font-semibold text-foreground",
@@ -31,19 +31,19 @@ export function TaskCard({ task, onEdit, onDelete, onComplete, busy = false }: T
           >
             {task.title}
           </h3>
-          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground break-words">
             {task.description || "Sem descrição"}
           </p>
         </div>
-        <StatusBadge status={task.status} />
+        <StatusBadge status={task.status} className="shrink-0" />
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className={cn("inline-flex items-center gap-1.5", late && "text-destructive")}>
-          <CalendarClock className="size-3.5" />
-          Limite: {formatDate(task.dueDate)}
+          <CalendarClock className="size-3.5 shrink-0" />
+          <span className="min-w-0">Limite: {formatDate(task.dueDate)}</span>
         </span>
-        <span>Criada em {formatDate(task.createdAt)}</span>
+        <span className="min-w-0">Criada em {formatDate(task.createdAt)}</span>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">

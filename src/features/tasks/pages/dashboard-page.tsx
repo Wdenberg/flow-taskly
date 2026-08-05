@@ -22,7 +22,7 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="surface-card flex items-center gap-4 p-5">
+    <div className="surface-card flex min-w-0 items-center gap-4 p-5">
       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
         <Icon className="size-5" />
       </span>
@@ -54,7 +54,7 @@ export function DashboardPage() {
     >
       {isLoading ? (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="stats-grid">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton key={index} className="h-24 rounded-2xl" />
             ))}
@@ -65,14 +65,14 @@ export function DashboardPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="stats-grid">
             <StatCard label="Total" value={stats.total} icon={ListChecks} />
             <StatCard label="Pendentes" value={stats.pending} icon={CircleDashed} />
             <StatCard label="Em andamento" value={stats.inProgress} icon={Loader2} />
             <StatCard label="Concluídas" value={stats.completed} icon={CheckCircle2} />
           </div>
 
-          <section className="surface-card p-5 md:p-6">
+          <section className="surface-card min-w-0 p-5 md:p-6">
             <div className="mb-4 flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold">Tarefas recentes</h2>
               <Button asChild variant="ghost" size="sm">

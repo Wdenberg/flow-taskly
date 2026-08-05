@@ -183,6 +183,7 @@
     color: var(--color-foreground);
     font-feature-settings: "cv02", "cv03", "cv04";
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   /* Touch targets mínimos para mobile */
@@ -238,14 +239,61 @@
   --tw-ring-color: var(--badge-rose-ring);
 }
 
-/* Grid responsivo para cards de tarefas */
+/* Grid responsivo para cards de tarefas — fluido em todas as telas */
 @utility card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 30vw, 450px), 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  }
+}
+
+/* Grid responsivo para cards de estatísticas do dashboard */
+@utility stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* Previne scroll chaining em modais */
 @utility modal-scroll {
   overscroll-behavior: contain;
+}
+
+/* Garante que elementos não estourem o viewport no mobile */
+@layer base {
+  img,
+  video,
+  canvas,
+  svg,
+  iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .min-w-0 {
+    min-width: 0;
+  }
 }

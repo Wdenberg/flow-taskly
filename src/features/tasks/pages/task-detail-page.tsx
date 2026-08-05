@@ -56,7 +56,7 @@ export function TaskDetailPage({ taskId }: { taskId: string }) {
           />
         ) : (
           <>
-            <article className="surface-card space-y-5 p-5 md:p-8">
+            <article className="surface-card min-w-0 space-y-5 p-5 md:p-8">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <h2 className="min-w-0 flex-1 text-xl font-semibold tracking-tight break-words">
                   {task.title}
