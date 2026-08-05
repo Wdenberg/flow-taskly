@@ -1,13 +1,28 @@
 import { ERROR_MESSAGES } from "./messages";
 
+export type AuthErrorType =
+  | "TOKEN_EXPIRED"
+  | "TOKEN_INVALID"
+  | "PERMISSION_DENIED"
+  | "SESSION_NOT_FOUND"
+  | "AUTH_SESSION_EXPIRED"
+  | "AUTH_INVALID_TOKEN";
+
 export class AppError extends Error {
   readonly status: number | undefined;
   readonly details: unknown;
   readonly code?: string;
   readonly isAuthError?: boolean;
   readonly isNetworkError?: boolean;
+  readonly cause?: unknown;
 
-  constructor(message: string, status?: number, details?: unknown, code?: string) {
+  constructor(
+    message: string,
+    status?: number,
+    details?: unknown,
+    code?: string,
+    cause?: unknown,
+  ) {
     super(message);
     this.name = "AppError";
     this.status = status;
@@ -15,12 +30,26 @@ export class AppError extends Error {
     this.code = code;
     this.isAuthError = false;
     this.isNetworkError = false;
+    this.cause = cause;
   }
 
   static fromError(error: unknown): AppError {
     if (error instanceof AppError) return error;
-    if (error instanceof Error) return new AppError(error.message, 500);
+    if (error instanceof Error) return new AppError(error.message, 500, undefined, undefined, error);
     return new AppError(ERROR_MESSAGES.HTTP.GENERIC, 500);
+  }
+
+  getDiagnosticInfo(): Record<string, unknown> {
+    return {
+      name: this.name,
+      message: this.message,
+      status: this.status,
+      code: this.code,
+      isAuthError: this.isAuthError,
+      isNetworkError: this.isNetworkError,
+      cause: this.cause instanceof Error ? this.cause.message : this.cause,
+      stack: this.stack,
+    };
   }
 }
 
@@ -58,4 +87,39 @@ export function mapHttpError(status: number | undefined, data: unknown): AppErro
     error.code = "NETWORK_ERROR";
   }
   return error;
+}
+
+export function classifyAuthError(status: number | undefined, data: unknown): AppError {
+  const payload = (data ?? {}) as ApiErrorShape;
+  const rawMessage = Array.isArray(payload.message)
+    ? payload.message.join(", ")
+    : typeof payload.message === "string"
+      ? payload.message
+      : typeof payload.error === "string"
+        ? payload.error
+        : "";
+
+  const lower = rawMessage.toLowerCase();
+
+  if (status === 401) {
+    if (lower.includes("expir") || lower.includes("expired")) {
+      return new AppError(ERROR_MESSAGES.AUTH.TOKEN_EXPIRED, 401, data, "TOKEN_EXPIRED", rawMessage);
+    }
+    if (lower.includes("invalid") || lower.includes("malformed") || lower.includes("formato")) {
+      return new AppError(ERROR_MESSAGES.AUTH.TOKEN_INVALID, 401, data, "TOKEN_INVALID", rawMessage);
+    }
+    if (lower.includes("session") || lower.includes("sessão") || lower.includes("not found")) {
+      return new AppError(ERROR_MESSAGES.AUTH.SESSION_NOT_FOUND, 401, data, "SESSION_NOT_FOUND", rawMessage);
+    }
+    return new AppError(ERROR_MESSAGES.AUTH.SESSION_EXPIRED, 401, data, "AUTH_SESSION_EXPIRED", rawMessage);
+  }
+
+  if (status === 403) {
+    if (lower.includes("permission") || lower.includes("denied") || lower.includes("acesso") || lower.includes("permissão")) {
+      return new AppError(ERROR_MESSAGES.AUTH.PERMISSION_DENIED, 403, data, "PERMISSION_DENIED", rawMessage);
+    }
+    return new AppError("Você não tem permissão para esta ação.", 403, data, "PERMISSION_DENIED", rawMessage);
+  }
+
+  return mapHttpError(status, data);
 }

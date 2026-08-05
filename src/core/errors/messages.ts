@@ -3,6 +3,10 @@ export const ERROR_MESSAGES = {
     INVALID_TOKEN: "Sua sessão expirou. Por favor, faça login novamente.",
     SESSION_EXPIRED: "Sua sessão expirou. Por favor, faça login novamente.",
     NOT_AUTHENTICATED: "Você precisa estar autenticado para continuar.",
+    TOKEN_EXPIRED: "Sua sessão expirou. Faça login novamente.",
+    TOKEN_INVALID: "Formato do token inválido. Reautentique-se.",
+    PERMISSION_DENIED: "Acesso negado. Permissão insuficiente.",
+    SESSION_NOT_FOUND: "Sessão não encontrada no servidor.",
   },
   NETWORK: {
     ERROR: "Erro de conexão. Verifique sua internet e tente novamente.",

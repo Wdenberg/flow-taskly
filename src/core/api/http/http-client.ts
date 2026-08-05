@@ -1,7 +1,7 @@
 import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
 
 import { API_BASE_URL } from "../config/api.config";
-import { mapHttpError, AppError } from "@/core/errors/app-error";
+import { AppError, classifyAuthError } from "@/core/errors/app-error";
 import { ERROR_MESSAGES } from "@/core/errors/messages";
 
 type TokenGetter = () => string | null;
@@ -71,8 +71,7 @@ httpClient.interceptors.request.use(
 
     // Token ausente, inválido ou vazio — bloqueia a chamada antes de sair.
     if (!isValidToken(token)) {
-      const error = new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, 401);
-      error.code = "AUTH_INVALID_TOKEN";
+      const error = new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, 401, undefined, "AUTH_INVALID_TOKEN");
       error.isAuthError = true;
       return Promise.reject(error);
     }
@@ -108,9 +107,23 @@ httpClient.interceptors.response.use(
 
     if (sessionExpired) {
       onUnauthorized();
-      return Promise.reject(
-        mapHttpError(401, { message: ERROR_MESSAGES.AUTH.SESSION_EXPIRED }),
-      );
+      const appError = classifyAuthError(401, { message: ERROR_MESSAGES.AUTH.SESSION_EXPIRED });
+      if (import.meta.env.DEV) {
+        console.debug("[http] Sessão expirada detectada:", appError.getDiagnosticInfo());
+      }
+      return Promise.reject(appError);
+    }
+
+    // Tratamento específico para 401/403 com corpo (mensagem da API).
+    if (status === 401 || status === 403) {
+      const appError = classifyAuthError(status, data);
+      if (appError.code === "TOKEN_EXPIRED" || appError.code === "TOKEN_INVALID" || appError.code === "SESSION_NOT_FOUND") {
+        onUnauthorized();
+      }
+      if (import.meta.env.DEV) {
+        console.debug(`[http] Erro de autenticação (${status}):`, appError.getDiagnosticInfo());
+      }
+      return Promise.reject(appError);
     }
 
     return Promise.reject(mapHttpError(status, data));

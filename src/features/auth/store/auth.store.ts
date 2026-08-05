@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 import { AUTH_STORAGE_KEY } from "@/core/api/config/api.config";
 import { configureHttpAuth } from "@/core/api/http/http-client";
+import { AppError } from "@/core/errors/app-error";
 import type { AuthSession, User } from "@/core/types/auth";
 
 interface AuthState {
@@ -13,6 +14,7 @@ interface AuthState {
   logout: () => void;
   setHydrated: () => void;
   hasValidToken: () => boolean;
+  handleError: (error: unknown) => void;
 }
 
 // Garante um JWT puro: sem objeto JSON, sem prefixo "Bearer", sem "null"/"undefined".
@@ -60,6 +62,14 @@ export const useAuthStore = create<AuthState>()(
       hasValidToken: () => {
         const token = sanitizeToken(get().token);
         return token !== null;
+      },
+      handleError: (error) => {
+        if (error instanceof AppError && error.isAuthError) {
+          if (import.meta.env.DEV) {
+            console.debug(`[auth] Erro de autenticação (${new Date().toISOString()}):`, error.getDiagnosticInfo());
+          }
+          get().logout();
+        }
       },
     }),
     {
