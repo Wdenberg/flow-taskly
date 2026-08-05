@@ -1,4 +1,6 @@
-export const API_BASE_URL = "https://task-api-9vu0.onrender.com/api/v1";
+// A API pública não envia cabeçalhos CORS, então as chamadas passam por um
+// proxy no próprio servidor da aplicação (mesma origem, sem preflight bloqueado).
+export const API_BASE_URL = "/api/public/task-api";
 
 export const API_ENDPOINTS = {
   auth: {
