@@ -23,11 +23,11 @@ function StatCard({
 }) {
   return (
     <div className="surface-card flex items-center gap-4 p-5">
-      <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-primary">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
         <Icon className="size-5" />
       </span>
-      <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
+      <div className="min-w-0">
+        <p className="truncate text-sm text-muted-foreground">{label}</p>
         <p className="text-2xl font-semibold tracking-tight">{value}</p>
       </div>
     </div>
@@ -54,7 +54,7 @@ export function DashboardPage() {
     >
       {isLoading ? (
         <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton key={index} className="h-24 rounded-2xl" />
             ))}
@@ -65,7 +65,7 @@ export function DashboardPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Total" value={stats.total} icon={ListChecks} />
             <StatCard label="Pendentes" value={stats.pending} icon={CircleDashed} />
             <StatCard label="Em andamento" value={stats.inProgress} icon={Loader2} />
@@ -73,7 +73,7 @@ export function DashboardPage() {
           </div>
 
           <section className="surface-card p-5 md:p-6">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold">Tarefas recentes</h2>
               <Button asChild variant="ghost" size="sm">
                 <Link to="/tasks">Ver todas</Link>
@@ -93,7 +93,7 @@ export function DashboardPage() {
                       <Link
                         to="/tasks/$taskId"
                         params={{ taskId: task.id }}
-                        className="truncate text-sm font-medium hover:text-primary"
+                        className="block truncate text-sm font-medium hover:text-primary"
                       >
                         {task.title}
                       </Link>
@@ -101,7 +101,7 @@ export function DashboardPage() {
                         Limite: {formatDate(task.dueDate)}
                       </p>
                     </div>
-                    <StatusBadge status={task.status} />
+                    <StatusBadge status={task.status} className="shrink-0" />
                   </li>
                 ))}
               </ul>

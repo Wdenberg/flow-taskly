@@ -56,23 +56,25 @@ export function TaskDetailPage({ taskId }: { taskId: string }) {
           />
         ) : (
           <>
-            <article className="surface-card space-y-5 p-6 md:p-8">
+            <article className="surface-card space-y-5 p-5 md:p-8">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <h2 className="text-xl font-semibold tracking-tight">{task.title}</h2>
-                <StatusBadge status={task.status} />
+                <h2 className="min-w-0 flex-1 text-xl font-semibold tracking-tight break-words">
+                  {task.title}
+                </h2>
+                <StatusBadge status={task.status} className="shrink-0" />
               </div>
 
-              <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+              <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground break-words">
                 {task.description || "Sem descrição."}
               </p>
 
-              <div className="grid gap-3 border-t border-border pt-5 text-sm text-muted-foreground sm:grid-cols-3">
+              <div className="flex flex-col gap-3 border-t border-border pt-5 text-sm text-muted-foreground sm:grid sm:grid-cols-3">
                 <span className="inline-flex items-center gap-1.5">
-                  <CalendarClock className="size-4" />
-                  Limite: {formatDate(task.dueDate)}
+                  <CalendarClock className="size-4 shrink-0" />
+                  <span className="min-w-0 break-words">Limite: {formatDate(task.dueDate)}</span>
                 </span>
-                <span>Criada em {formatDate(task.createdAt)}</span>
-                <span>Atualizada em {formatDate(task.updatedAt)}</span>
+                <span className="break-words">Criada em {formatDate(task.createdAt)}</span>
+                <span className="break-words">Atualizada em {formatDate(task.updatedAt)}</span>
               </div>
 
               <div className="flex flex-wrap gap-2 border-t border-border pt-5">

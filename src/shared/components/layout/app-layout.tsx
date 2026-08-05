@@ -39,12 +39,17 @@ export function AppLayout({ title, description, actions, children }: AppLayoutPr
           <header className="sticky top-0 z-10 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur md:px-8">
             <SidebarTrigger />
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-lg font-semibold tracking-tight">{title}</h1>
+              <h1
+                className="truncate font-semibold tracking-tight"
+                style={{ fontSize: "clamp(1rem, 4vw, 1.25rem)" }}
+              >
+                {title}
+              </h1>
               {description ? (
                 <p className="truncate text-xs text-muted-foreground">{description}</p>
               ) : null}
             </div>
-            {actions}
+            {actions ? <div className="shrink-0">{actions}</div> : null}
           </header>
           <main className="flex-1 px-4 py-6 md:px-8 md:py-8">
             <div className="mx-auto w-full max-w-6xl animate-in fade-in duration-300">

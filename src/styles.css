@@ -184,6 +184,23 @@
     font-feature-settings: "cv02", "cv03", "cv04";
     -webkit-font-smoothing: antialiased;
   }
+
+  /* Touch targets mínimos para mobile */
+  button,
+  [role="button"],
+  .interactive {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Previne auto-zoom no iOS para inputs */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
 }
 
 @utility shadow-soft {
@@ -219,4 +236,16 @@
   background-color: var(--badge-rose-bg);
   color: var(--badge-rose-text);
   --tw-ring-color: var(--badge-rose-ring);
+}
+
+/* Grid responsivo para cards de tarefas */
+@utility card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 30vw, 450px), 1fr));
+  gap: 1rem;
+}
+
+/* Previne scroll chaining em modais */
+@utility modal-scroll {
+  overscroll-behavior: contain;
 }

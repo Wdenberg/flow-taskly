@@ -71,7 +71,7 @@ export function TasksPage() {
         <TaskFilters />
 
         {isLoading ? (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="card-grid">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton key={index} className="h-44 rounded-2xl" />
             ))}
@@ -86,7 +86,7 @@ export function TasksPage() {
             onAction={openCreate}
           />
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="card-grid">
             {tasks.map((task) => (
               <TaskCard
                 key={task.id}
