@@ -23,10 +23,44 @@ export const httpClient: AxiosInstance = axios.create({
   timeout: 30000,
 });
 
+// Garante um JWT puro: sem objeto JSON, sem prefixo "Bearer", sem "null"/"undefined".
+function sanitizeToken(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  let value = raw.trim();
+  if (!value || value === "null" || value === "undefined") return null;
+  if (value.startsWith("{") || value.startsWith('"')) {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      if (typeof parsed === "string") value = parsed.trim();
+      else if (parsed && typeof parsed === "object") {
+        const obj = parsed as Record<string, unknown>;
+        const nested = obj["token"] ?? obj["accessToken"] ?? obj["jwt"];
+        if (typeof nested !== "string") return null;
+        value = nested.trim();
+      }
+    } catch {
+      return null;
+    }
+  }
+  if (/^bearer\s+/i.test(value)) value = value.replace(/^bearer\s+/i, "").trim();
+  if (!value || value === "null" || value === "undefined") return null;
+  return value;
+}
+
 httpClient.interceptors.request.use((config) => {
-  const token = getToken();
+  // Sempre lê o token na hora da requisição (sem cache em memória).
+  const token = sanitizeToken(getToken());
   if (token) {
     config.headers.set?.("Authorization", `Bearer ${token}`);
+  } else {
+    config.headers.delete?.("Authorization");
+  }
+  if (import.meta.env.DEV) {
+    console.debug(
+      `[http] ${config.method?.toUpperCase()} ${config.url} · Authorization: ${
+        token ? `Bearer ${token.slice(0, 12)}…(${token.length})` : "ausente"
+      }`,
+    );
   }
   return config;
 });
