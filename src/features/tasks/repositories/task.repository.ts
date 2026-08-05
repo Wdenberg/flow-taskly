@@ -26,6 +26,21 @@ export interface ITaskRepository {
   complete(id: string): Promise<TaskDTO>;
 }
 
+// O backend (Java/Spring) espera LocalDateTime em `dueDate`.
+// Enviar "YYYY-MM-DD" quebra a desserialização e a API responde 401.
+function toApiDateTime(value: string | null | undefined): string | null {
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00:00`;
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return `${value}:00`;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString().slice(0, 19);
+}
+
+function toPayload<T extends { dueDate?: string | null }>(input: T) {
+  return { ...input, dueDate: toApiDateTime(input.dueDate) };
+}
+
 export const taskRepository: ITaskRepository = {
   async list() {
     const { data } = await httpClient.get<ListResponse>(API_ENDPOINTS.tasks.root);
@@ -40,11 +55,14 @@ export const taskRepository: ITaskRepository = {
     return unwrapOne(data);
   },
   async create(input) {
-    const { data } = await httpClient.post<TaskDTO>(API_ENDPOINTS.tasks.root, input);
+    const { data } = await httpClient.post<TaskDTO>(API_ENDPOINTS.tasks.root, toPayload(input));
     return unwrapOne(data);
   },
   async update(id, input) {
-    const { data } = await httpClient.put<TaskDTO>(API_ENDPOINTS.tasks.byId(id), input);
+    const { data } = await httpClient.put<TaskDTO>(
+      API_ENDPOINTS.tasks.byId(id),
+      toPayload(input),
+    );
     return unwrapOne(data);
   },
   async remove(id) {

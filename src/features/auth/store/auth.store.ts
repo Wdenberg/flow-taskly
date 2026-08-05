@@ -28,7 +28,17 @@ export const useAuthStore = create<AuthState>()(
       name: AUTH_STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ user: state.user, token: state.token }),
-      onRehydrateStorage: () => (state) => state?.setHydrated(),
+      onRehydrateStorage: () => (state) => {
+        if (import.meta.env.DEV) {
+          const t = state?.token;
+          console.debug(
+            `[auth] token restaurado de "${AUTH_STORAGE_KEY}": ${
+              typeof t === "string" && t ? `${t.slice(0, 12)}…(${t.length})` : "nenhum"
+            }`,
+          );
+        }
+        state?.setHydrated();
+      },
     },
   ),
 );
