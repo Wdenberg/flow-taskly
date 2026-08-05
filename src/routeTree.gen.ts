@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as TasksIndexRouteImport } from './routes/tasks/index'
 import { Route as TasksTaskIdRouteImport } from './routes/tasks/$taskId'
+import { Route as ApiPublicTaskApiSplatRouteImport } from './routes/api/public/task-api/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +47,11 @@ const TasksTaskIdRoute = TasksTaskIdRouteImport.update({
   path: '/tasks/$taskId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTaskApiSplatRoute = ApiPublicTaskApiSplatRouteImport.update({
+  id: '/api/public/task-api/$',
+  path: '/api/public/task-api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/tasks/$taskId': typeof TasksTaskIdRoute
   '/tasks/': typeof TasksIndexRoute
+  '/api/public/task-api/$': typeof ApiPublicTaskApiSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/tasks/$taskId': typeof TasksTaskIdRoute
   '/tasks': typeof TasksIndexRoute
+  '/api/public/task-api/$': typeof ApiPublicTaskApiSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,13 +79,27 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/tasks/$taskId': typeof TasksTaskIdRoute
   '/tasks/': typeof TasksIndexRoute
+  '/api/public/task-api/$': typeof ApiPublicTaskApiSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/dashboard' | '/login' | '/register' | '/tasks/$taskId' | '/tasks/'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/register'
+    | '/tasks/$taskId'
+    | '/tasks/'
+    | '/api/public/task-api/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/register' | '/tasks/$taskId' | '/tasks'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/register'
+    | '/tasks/$taskId'
+    | '/tasks'
+    | '/api/public/task-api/$'
   id:
     | '__root__'
     | '/'
@@ -86,6 +108,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/tasks/$taskId'
     | '/tasks/'
+    | '/api/public/task-api/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,6 +118,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   TasksTaskIdRoute: typeof TasksTaskIdRoute
   TasksIndexRoute: typeof TasksIndexRoute
+  ApiPublicTaskApiSplatRoute: typeof ApiPublicTaskApiSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -141,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TasksTaskIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/task-api/$': {
+      id: '/api/public/task-api/$'
+      path: '/api/public/task-api/$'
+      fullPath: '/api/public/task-api/$'
+      preLoaderRoute: typeof ApiPublicTaskApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -151,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   TasksTaskIdRoute: TasksTaskIdRoute,
   TasksIndexRoute: TasksIndexRoute,
+  ApiPublicTaskApiSplatRoute: ApiPublicTaskApiSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
