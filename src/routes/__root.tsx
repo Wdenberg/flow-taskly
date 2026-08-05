@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import "../styles.css";
 import { Toaster } from "@/components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 function NotFoundComponent() {
   return (
@@ -118,6 +119,33 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const hasValidToken = useAuthStore((state) => state.hasValidToken);
+
+  // Verifica autenticação em cada navegação e em mudanças de storage (outras abas).
+  useEffect(() => {
+    const checkAuth = () => {
+      const path = window.location.pathname;
+      const isPublicRoute = path === "/login" || path === "/register" || path === "/";
+      const isApiRoute = path.includes("/api/");
+
+      if (!isPublicRoute && !isApiRoute && !hasValidToken()) {
+        window.location.assign("/login");
+      }
+    };
+
+    checkAuth();
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "taskflow.auth") {
+        checkAuth();
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [hasValidToken]);
 
   return (
     <QueryClientProvider client={queryClient}>

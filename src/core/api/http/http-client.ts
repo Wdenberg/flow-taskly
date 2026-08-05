@@ -1,7 +1,8 @@
-import axios, { AxiosError, type AxiosInstance } from "axios";
+import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
 
 import { API_BASE_URL } from "../config/api.config";
-import { mapHttpError } from "@/core/errors/app-error";
+import { mapHttpError, AppError } from "@/core/errors/app-error";
+import { ERROR_MESSAGES } from "@/core/errors/messages";
 
 type TokenGetter = () => string | null;
 type UnauthorizedHandler = () => void;
@@ -47,23 +48,46 @@ function sanitizeToken(raw: unknown): string | null {
   return value;
 }
 
-httpClient.interceptors.request.use((config) => {
-  // Sempre lê o token na hora da requisição (sem cache em memória).
-  const token = sanitizeToken(getToken());
-  if (token) {
+function isValidToken(token: string | null): boolean {
+  return token !== null && token.length > 0;
+}
+
+// Rotas públicas que não exigem token (login/register passam pelo proxy).
+function isPublicRoute(url: string | undefined): boolean {
+  if (!url) return false;
+  return url.includes("/auth/login") || url.includes("/auth/register");
+}
+
+httpClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    // Rotas públicas (login/register) não precisam de token.
+    if (isPublicRoute(config.url)) {
+      config.headers.delete?.("Authorization");
+      return config;
+    }
+
+    // Sempre lê o token na hora da requisição (sem cache em memória).
+    const token = sanitizeToken(getToken());
+
+    // Token ausente, inválido ou vazio — bloqueia a chamada antes de sair.
+    if (!isValidToken(token)) {
+      const error = new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, 401);
+      error.code = "AUTH_INVALID_TOKEN";
+      error.isAuthError = true;
+      return Promise.reject(error);
+    }
+
     config.headers.set?.("Authorization", `Bearer ${token}`);
-  } else {
-    config.headers.delete?.("Authorization");
-  }
-  if (import.meta.env.DEV) {
-    console.debug(
-      `[http] ${config.method?.toUpperCase()} ${config.url} · Authorization: ${
-        token ? `Bearer ${token.slice(0, 12)}…(${token.length})` : "ausente"
-      }`,
-    );
-  }
-  return config;
-});
+
+    if (import.meta.env.DEV) {
+      console.debug(
+        `[http] ${config.method?.toUpperCase()} ${config.url} · Authorization: Bearer ${token.slice(0, 12)}…(${token.length})`,
+      );
+    }
+    return config;
+  },
+  (error: AxiosError) => Promise.reject(error),
+);
 
 function isEmptyBody(data: unknown): boolean {
   if (data === null || data === undefined) return true;
@@ -85,7 +109,7 @@ httpClient.interceptors.response.use(
     if (sessionExpired) {
       onUnauthorized();
       return Promise.reject(
-        mapHttpError(401, { message: "Sua sessão expirou. Faça login novamente." }),
+        mapHttpError(401, { message: ERROR_MESSAGES.AUTH.SESSION_EXPIRED }),
       );
     }
 
