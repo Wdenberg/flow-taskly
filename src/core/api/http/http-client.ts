@@ -31,11 +31,30 @@ httpClient.interceptors.request.use((config) => {
   return config;
 });
 
+function isEmptyBody(data: unknown): boolean {
+  if (data === null || data === undefined) return true;
+  if (typeof data === "string") return data.trim() === "";
+  if (typeof data === "object") return Object.keys(data as object).length === 0;
+  return false;
+}
+
 httpClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     const status = error.response?.status;
-    if (status === 401) onUnauthorized();
-    return Promise.reject(mapHttpError(status, error.response?.data));
+    const data = error.response?.data;
+
+    // A API (Spring Security) responde 403 com corpo vazio para token ausente,
+    // inválido ou expirado — tratamos como sessão expirada, igual ao 401.
+    const sessionExpired = status === 401 || (status === 403 && isEmptyBody(data) && Boolean(getToken()));
+
+    if (sessionExpired) {
+      onUnauthorized();
+      return Promise.reject(
+        mapHttpError(401, { message: "Sua sessão expirou. Faça login novamente." }),
+      );
+    }
+
+    return Promise.reject(mapHttpError(status, data));
   },
 );
