@@ -5,9 +5,9 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
-  validateSearch: (search: Record<string, unknown>) => ({
-    redirect: typeof search["redirect"] === "string" ? (search["redirect"] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } =>
+    typeof search["redirect"] === "string" ? { redirect: search["redirect"] } : {},
+
   // Já autenticado não vê a tela de login.
   beforeLoad: () => {
     if (useAuthStore.getState().hasValidToken()) {
