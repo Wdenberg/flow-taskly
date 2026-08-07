@@ -71,6 +71,31 @@ export function buildStats(tasks: Task[]): TaskStats {
   };
 }
 
+export interface Paginated<T> {
+  pageItems: T[];
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+/** Paginação em memória: a API devolve a coleção inteira. */
+export function paginate<T>(items: T[], page: number, pageSize: number): Paginated<T> {
+  const size = Math.max(1, pageSize);
+  const totalItems = items.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / size));
+  const current = Math.min(Math.max(1, page), totalPages);
+  const start = (current - 1) * size;
+  return {
+    pageItems: items.slice(start, start + size),
+    page: current,
+    pageSize: size,
+    totalItems,
+    totalPages,
+  };
+}
+
+
 export function createTaskService(repository: ITaskRepository = taskRepository) {
   return {
     async list(status: TaskStatus | "ALL"): Promise<Task[]> {

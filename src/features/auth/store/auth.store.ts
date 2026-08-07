@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { AUTH_STORAGE_KEY } from "@/core/api/config/api.config";
 import { configureHttpAuth } from "@/core/api/http/http-client";
 import { AppError } from "@/core/errors/app-error";
+import { isTokenExpired, millisUntilExpiry, sanitizeToken } from "@/core/utils/token";
 import type { AuthSession, User } from "@/core/types/auth";
 
 interface AuthState {
@@ -17,30 +18,6 @@ interface AuthState {
   handleError: (error: unknown) => void;
 }
 
-// Garante um JWT puro: sem objeto JSON, sem prefixo "Bearer", sem "null"/"undefined".
-function sanitizeToken(raw: unknown): string | null {
-  if (typeof raw !== "string") return null;
-  let value = raw.trim();
-  if (!value || value === "null" || value === "undefined") return null;
-  if (value.startsWith("{") || value.startsWith('"')) {
-    try {
-      const parsed = JSON.parse(value) as unknown;
-      if (typeof parsed === "string") value = parsed.trim();
-      else if (parsed && typeof parsed === "object") {
-        const obj = parsed as Record<string, unknown>;
-        const nested = obj["token"] ?? obj["accessToken"] ?? obj["jwt"];
-        if (typeof nested !== "string") return null;
-        value = nested.trim();
-      }
-    } catch {
-      return null;
-    }
-  }
-  if (/^bearer\s+/i.test(value)) value = value.replace(/^bearer\s+/i, "").trim();
-  if (!value || value === "null" || value === "undefined") return null;
-  return value;
-}
-
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -50,18 +27,22 @@ export const useAuthStore = create<AuthState>()(
       setSession: (session) => {
         const token = sanitizeToken(session.token);
         set({ user: session.user, token });
+        scheduleExpiryLogout(token);
       },
       logout: () => {
+        clearExpiryTimer();
         set({ user: null, token: null });
-        // Notifica outras abas que a sessão foi encerrada.
+        // Notifica outras abas/ouvintes que a sessão foi encerrada.
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event("auth:logout"));
         }
       },
       setHydrated: () => set({ hydrated: true }),
+      // Válido = existe, é um JWT bem formado e ainda não expirou.
       hasValidToken: () => {
         const token = sanitizeToken(get().token);
-        return token !== null;
+        if (!token) return false;
+        return !isTokenExpired(token);
       },
       handleError: (error) => {
         if (error instanceof AppError && error.isAuthError) {
@@ -77,13 +58,19 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ user: state.user, token: state.token }),
       onRehydrateStorage: () => (state) => {
+        const token = sanitizeToken(state?.token);
         if (import.meta.env.DEV) {
-          const t = state?.token;
           console.debug(
             `[auth] token restaurado de "${AUTH_STORAGE_KEY}": ${
-              typeof t === "string" && t ? `${t.slice(0, 12)}…(${t.length})` : "nenhum"
+              token ? `${token.slice(0, 12)}…(${token.length})` : "nenhum"
             }`,
           );
+        }
+        // Descarta imediatamente uma sessão já expirada no storage.
+        if (token && isTokenExpired(token)) {
+          state?.logout();
+        } else {
+          scheduleExpiryLogout(token);
         }
         state?.setHydrated();
       },
@@ -91,14 +78,29 @@ export const useAuthStore = create<AuthState>()(
   ),
 );
 
+// --- Expiração proativa: desloga automaticamente quando o JWT vence ---
+
+let expiryTimer: ReturnType<typeof setTimeout> | null = null;
+
+function clearExpiryTimer() {
+  if (expiryTimer) {
+    clearTimeout(expiryTimer);
+    expiryTimer = null;
+  }
+}
+
+function scheduleExpiryLogout(token: string | null) {
+  clearExpiryTimer();
+  if (!token || typeof window === "undefined") return;
+  const remaining = millisUntilExpiry(token);
+  if (remaining === null) return; // token sem `exp`: quem decide é o backend
+  const delay = Math.max(remaining - 30_000, 0);
+  expiryTimer = setTimeout(() => useAuthStore.getState().logout(), delay);
+}
+
 configureHttpAuth({
   getToken: () => useAuthStore.getState().token,
-  onUnauthorized: () => useAuthStore.getState().logout(),
+  onUnauthorized: () => {
+    if (useAuthStore.getState().token) useAuthStore.getState().logout();
+  },
 });
-
-// Listener global: logout em uma aba limpa a sessão em todas as outras.
-if (typeof window !== "undefined") {
-  window.addEventListener("auth:logout", () => {
-    useAuthStore.getState().logout();
-  });
-}

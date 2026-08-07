@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { Loader } from "@/shared/components/ui/loader";
-import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "TaskFlow — Gerenciamento de tarefas pessoais" },
@@ -25,17 +26,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { hydrated, isAuthenticated } = useAuth();
+  const hydrated = useAuthStore((state) => state.hydrated);
+  const hasValidToken = useAuthStore((state) => state.hasValidToken);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!hydrated) return;
-    void navigate({ to: isAuthenticated ? "/dashboard" : "/login", replace: true });
-  }, [hydrated, isAuthenticated, navigate]);
+    void navigate({ to: hasValidToken() ? "/dashboard" : "/login", replace: true });
+  }, [hydrated, hasValidToken, navigate]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <main className="flex min-h-dvh items-center justify-center bg-background">
       <Loader label="Carregando TaskFlow..." />
-    </div>
+    </main>
   );
 }

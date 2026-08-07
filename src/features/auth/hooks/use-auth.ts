@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { AppError } from "@/core/errors/app-error";
@@ -24,21 +24,47 @@ export function useAuth() {
   const hasValidToken = useAuthStore((state) => state.hasValidToken);
   const handleError = useAuthStore((state) => state.handleError);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const logoutRef = useRef(clearSession);
   useEffect(() => {
     logoutRef.current = clearSession;
   }, [clearSession]);
 
-  // Listener para logout em outras abas.
+  // Limpa o cache do React Query e leva o usuário para o login.
+  const teardownSession = useCallback(async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    logoutRef.current();
+    await navigate({ to: "/login", replace: true });
+  }, [navigate, queryClient]);
+
+  const teardownRef = useRef(teardownSession);
+  useEffect(() => {
+    teardownRef.current = teardownSession;
+  }, [teardownSession]);
+
+  // Listener para logout disparado em outro ponto do app ou em outra aba.
   useEffect(() => {
     const handleLogout = () => {
-      logoutRef.current();
-      void navigate({ to: "/login" });
+      void queryClient.cancelQueries().then(() => queryClient.clear());
+      void navigate({ to: "/login", replace: true });
     };
     window.addEventListener("auth:logout", handleLogout);
     return () => window.removeEventListener("auth:logout", handleLogout);
-  }, [navigate]);
+  }, [navigate, queryClient]);
+
+  // Sessão encerrada em outra aba (storage compartilhado).
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== "taskflow.auth") return;
+      if (!useAuthStore.getState().hasValidToken()) {
+        void teardownRef.current();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
@@ -74,6 +100,7 @@ export function useAuth() {
       if (!hasValidToken()) {
         const error = new AppError(ERROR_MESSAGES.AUTH.SESSION_EXPIRED, 401, undefined, "AUTH_SESSION_EXPIRED");
         error.isAuthError = true;
+        void teardownSession();
         throw error;
       }
 
@@ -82,20 +109,19 @@ export function useAuth() {
       } catch (error) {
         if (error instanceof AppError && error.isAuthError) {
           handleError(error);
-          logoutRef.current();
-          void navigate({ to: "/login" });
+          void teardownSession();
         }
         throw error;
       }
     },
-    [hasValidToken, handleError, navigate],
+    [hasValidToken, handleError, teardownSession],
   );
 
   return {
     user,
     token,
     hydrated,
-    isAuthenticated: Boolean(token),
+    isAuthenticated: Boolean(token) && hasValidToken(),
     hasValidToken,
     handleProtectedAction,
     login: loginMutation.mutate,
@@ -103,9 +129,8 @@ export function useAuth() {
     register: registerMutation.mutate,
     isRegistering: registerMutation.isPending,
     logout: () => {
-      clearSession();
+      void teardownSession();
       toast.success("Sessão encerrada.");
-      void navigate({ to: "/login" });
     },
   };
 }

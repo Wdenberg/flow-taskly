@@ -1,8 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { LoginPage } from "@/features/auth/pages/login-page";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 export const Route = createFileRoute("/login")({
+  ssr: false,
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search["redirect"] === "string" ? (search["redirect"] as string) : undefined,
+  }),
+  // Já autenticado não vê a tela de login.
+  beforeLoad: () => {
+    if (useAuthStore.getState().hasValidToken()) {
+      throw redirect({ to: "/dashboard", replace: true });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Entrar — TaskFlow" },

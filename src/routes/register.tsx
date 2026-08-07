@@ -1,8 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { RegisterPage } from "@/features/auth/pages/register-page";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 export const Route = createFileRoute("/register")({
+  ssr: false,
+  beforeLoad: () => {
+    if (useAuthStore.getState().hasValidToken()) {
+      throw redirect({ to: "/dashboard", replace: true });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Criar conta — TaskFlow" },
