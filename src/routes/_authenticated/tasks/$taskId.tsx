@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { TaskDetailPage } from "@/features/tasks/pages/task-detail-page";
 
-export const Route = createFileRoute("/tasks/$taskId")({
+export const Route = createFileRoute("/_authenticated/tasks/$taskId")({
   head: () => ({
     meta: [
       { title: "Detalhes da tarefa — TaskFlow" },
