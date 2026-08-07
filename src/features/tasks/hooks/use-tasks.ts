@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import type { Task, TaskStatus } from "@/core/types/task";
-import { applyFilters, buildStats, taskService } from "../services/task.service";
+import { applyFilters, buildStats, paginate, taskService } from "../services/task.service";
 import { useTaskFiltersStore } from "../store/task-filters.store";
 
 export const taskKeys = {
@@ -23,6 +23,8 @@ export function useTasks() {
   const status = useTaskFiltersStore((s) => s.status);
   const search = useTaskFiltersStore((s) => s.search);
   const sortBy = useTaskFiltersStore((s) => s.sortBy);
+  const page = useTaskFiltersStore((s) => s.page);
+  const pageSize = useTaskFiltersStore((s) => s.pageSize);
 
   const query = useTasksQuery(status);
   const tasks: Task[] = useMemo(
@@ -30,7 +32,9 @@ export function useTasks() {
     [query.data, status, search, sortBy],
   );
 
-  return { ...query, tasks };
+  const pagination = useMemo(() => paginate(tasks, page, pageSize), [tasks, page, pageSize]);
+
+  return { ...query, tasks, ...pagination };
 }
 
 export function useTaskStats() {

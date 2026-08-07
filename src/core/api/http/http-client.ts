@@ -1,8 +1,9 @@
 import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
 
 import { API_BASE_URL } from "../config/api.config";
-import { AppError, classifyAuthError } from "@/core/errors/app-error";
+import { AppError, classifyAuthError, mapHttpError } from "@/core/errors/app-error";
 import { ERROR_MESSAGES } from "@/core/errors/messages";
+import { isTokenExpired, sanitizeToken } from "@/core/utils/token";
 
 type TokenGetter = () => string | null;
 type UnauthorizedHandler = () => void;
@@ -21,36 +22,8 @@ export function configureHttpAuth(options: {
 export const httpClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
-  timeout: 30000,
+  timeout: 60000, // a API hospedada no Render "acorda" devagar no primeiro acesso
 });
-
-// Garante um JWT puro: sem objeto JSON, sem prefixo "Bearer", sem "null"/"undefined".
-function sanitizeToken(raw: unknown): string | null {
-  if (typeof raw !== "string") return null;
-  let value = raw.trim();
-  if (!value || value === "null" || value === "undefined") return null;
-  if (value.startsWith("{") || value.startsWith('"')) {
-    try {
-      const parsed = JSON.parse(value) as unknown;
-      if (typeof parsed === "string") value = parsed.trim();
-      else if (parsed && typeof parsed === "object") {
-        const obj = parsed as Record<string, unknown>;
-        const nested = obj["token"] ?? obj["accessToken"] ?? obj["jwt"];
-        if (typeof nested !== "string") return null;
-        value = nested.trim();
-      }
-    } catch {
-      return null;
-    }
-  }
-  if (/^bearer\s+/i.test(value)) value = value.replace(/^bearer\s+/i, "").trim();
-  if (!value || value === "null" || value === "undefined") return null;
-  return value;
-}
-
-function isValidToken(token: string | null): boolean {
-  return token !== null && token.length > 0;
-}
 
 // Rotas públicas que não exigem token (login/register passam pelo proxy).
 function isPublicRoute(url: string | undefined): boolean {
@@ -60,7 +33,6 @@ function isPublicRoute(url: string | undefined): boolean {
 
 httpClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Rotas públicas (login/register) não precisam de token.
     if (isPublicRoute(config.url)) {
       config.headers.delete?.("Authorization");
       return config;
@@ -69,10 +41,24 @@ httpClient.interceptors.request.use(
     // Sempre lê o token na hora da requisição (sem cache em memória).
     const token = sanitizeToken(getToken());
 
-    // Token ausente, inválido ou vazio — bloqueia a chamada antes de sair.
-    if (!isValidToken(token)) {
-      const error = new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, 401, undefined, "AUTH_INVALID_TOKEN");
+    // Token ausente ou inválido — bloqueia a chamada antes de sair.
+    if (!token) {
+      const error = new AppError(
+        ERROR_MESSAGES.AUTH.INVALID_TOKEN,
+        401,
+        undefined,
+        "AUTH_INVALID_TOKEN",
+      );
       error.isAuthError = true;
+      onUnauthorized();
+      return Promise.reject(error);
+    }
+
+    // Expiração proativa: não desperdiça uma ida ao servidor com token vencido.
+    if (isTokenExpired(token)) {
+      const error = new AppError(ERROR_MESSAGES.AUTH.TOKEN_EXPIRED, 401, undefined, "TOKEN_EXPIRED");
+      error.isAuthError = true;
+      onUnauthorized();
       return Promise.reject(error);
     }
 
@@ -114,7 +100,6 @@ httpClient.interceptors.response.use(
       return Promise.reject(appError);
     }
 
-    // Tratamento específico para 401/403 com corpo (mensagem da API).
     if (status === 401 || status === 403) {
       const appError = classifyAuthError(status, data);
       if (appError.code === "TOKEN_EXPIRED" || appError.code === "TOKEN_INVALID" || appError.code === "SESSION_NOT_FOUND") {

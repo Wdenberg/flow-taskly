@@ -12,11 +12,11 @@ import { useEffect, type ReactNode } from "react";
 import "../styles.css";
 import { Toaster } from "@/components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { useAuthStore } from "@/features/auth/store/auth.store";
+import { useThemeStore } from "@/shared/stores/theme.store";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
@@ -44,7 +44,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -119,33 +119,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const hasValidToken = useAuthStore((state) => state.hasValidToken);
 
-  // Verifica autenticação em cada navegação e em mudanças de storage (outras abas).
+  // Aplica o tema salvo assim que o cliente hidrata (evita flash e mismatch SSR).
   useEffect(() => {
-    const checkAuth = () => {
-      const path = window.location.pathname;
-      const isPublicRoute = path === "/login" || path === "/register" || path === "/";
-      const isApiRoute = path.includes("/api/");
-
-      if (!isPublicRoute && !isApiRoute && !hasValidToken()) {
-        window.location.assign("/login");
-      }
-    };
-
-    checkAuth();
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "taskflow.auth") {
-        checkAuth();
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [hasValidToken]);
+    const theme = useThemeStore.getState().theme;
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.style.colorScheme = theme;
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -155,3 +135,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

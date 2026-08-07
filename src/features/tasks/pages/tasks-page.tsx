@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,16 +8,21 @@ import { AppLayout } from "@/shared/components/layout/app-layout";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { ConfirmDialog } from "@/shared/components/ui/confirm-dialog";
+import { PaginationBar } from "@/shared/components/ui/pagination-bar";
+import { ColdStartNotice } from "@/shared/components/ui/cold-start-notice";
 import type { Task } from "@/core/types/task";
 import { TaskCard } from "../components/task-card";
 import { TaskDialog } from "../components/task-dialog";
 import { TaskFilters } from "../components/task-filters";
 import { useTasks } from "../hooks/use-tasks";
 import { useTaskMutations } from "../hooks/use-task-mutations";
+import { useTaskFiltersStore } from "../store/task-filters.store";
 import type { TaskFormValues } from "../schemas/task.schema";
 
 export function TasksPage() {
-  const { tasks, isLoading, isError, refetch } = useTasks();
+  const { pageItems, isLoading, isFetching, isError, refetch, page, totalPages, totalItems, pageSize } =
+    useTasks();
+  const setPage = useTaskFiltersStore((s) => s.setPage);
   const { createTask, updateTask, deleteTask, completeTask } = useTaskMutations();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -56,19 +62,43 @@ export function TasksPage() {
     );
   };
 
+  // Exclusão com "Desfazer": a API não tem lixeira, então recriamos a tarefa.
+  const confirmDelete = () => {
+    const target = pendingDelete;
+    if (!target) return;
+    deleteTask.mutate(target.id, {
+      onSuccess: () => {
+        setPendingDelete(undefined);
+        toast.success(`"${target.title}" excluída.`, {
+          action: {
+            label: "Desfazer",
+            onClick: () =>
+              createTask.mutate({
+                title: target.title,
+                description: target.description,
+                dueDate: target.dueDate ?? "",
+              }),
+          },
+        });
+      },
+    });
+  };
+
   return (
     <AppLayout
       title="Tarefas"
       description="Crie, filtre e acompanhe todas as suas tarefas."
       actions={
         <Button onClick={openCreate}>
-          <Plus className="mr-1.5 size-4" />
+          <Plus className="mr-1.5 size-4" aria-hidden="true" />
           Nova tarefa
         </Button>
       }
     >
       <div className="space-y-6">
         <TaskFilters />
+
+        <ColdStartNotice active={isLoading || isFetching} />
 
         {isLoading ? (
           <div className="card-grid">
@@ -78,7 +108,7 @@ export function TasksPage() {
           </div>
         ) : isError ? (
           <ErrorState onRetry={() => void refetch()} />
-        ) : tasks.length === 0 ? (
+        ) : totalItems === 0 ? (
           <EmptyState
             title="Nenhuma tarefa encontrada"
             description="Ajuste os filtros ou crie sua primeira tarefa para começar."
@@ -86,18 +116,28 @@ export function TasksPage() {
             onAction={openCreate}
           />
         ) : (
-          <div className="card-grid">
-            {tasks.map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onEdit={openEdit}
-                onDelete={setPendingDelete}
-                onComplete={(item) => completeTask.mutate(item.id)}
-                busy={completeTask.isPending}
-              />
-            ))}
-          </div>
+          <>
+            <ul className="card-grid list-none p-0">
+              {pageItems.map((task) => (
+                <li key={task.id} className="min-w-0">
+                  <TaskCard
+                    task={task}
+                    onEdit={openEdit}
+                    onDelete={setPendingDelete}
+                    onComplete={(item) => completeTask.mutate(item.id)}
+                    busy={completeTask.isPending}
+                  />
+                </li>
+              ))}
+            </ul>
+            <PaginationBar
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageChange={setPage}
+            />
+          </>
         )}
       </div>
 
@@ -113,13 +153,10 @@ export function TasksPage() {
         open={Boolean(pendingDelete)}
         onOpenChange={(open) => !open && setPendingDelete(undefined)}
         title="Excluir tarefa"
-        description={`Tem certeza que deseja excluir "${pendingDelete?.title ?? ""}"? Esta ação não pode ser desfeita.`}
+        description={`Tem certeza que deseja excluir "${pendingDelete?.title ?? ""}"? Você poderá desfazer logo após a exclusão.`}
         confirmLabel="Excluir"
         loading={deleteTask.isPending}
-        onConfirm={() => {
-          if (!pendingDelete) return;
-          deleteTask.mutate(pendingDelete.id, { onSuccess: () => setPendingDelete(undefined) });
-        }}
+        onConfirm={confirmDelete}
       />
     </AppLayout>
   );

@@ -11,10 +11,10 @@ export type AuthErrorType =
 export class AppError extends Error {
   readonly status: number | undefined;
   readonly details: unknown;
-  readonly code?: string;
-  readonly isAuthError?: boolean;
-  readonly isNetworkError?: boolean;
-  readonly cause?: unknown;
+  code: string | undefined;
+  isAuthError: boolean;
+  isNetworkError: boolean;
+  override readonly cause: unknown;
 
   constructor(
     message: string,
@@ -32,6 +32,7 @@ export class AppError extends Error {
     this.isNetworkError = false;
     this.cause = cause;
   }
+
 
   static fromError(error: unknown): AppError {
     if (error instanceof AppError) return error;
