@@ -1,6 +1,10 @@
 import {
+  TaskPriority,
   TaskStatus,
+  type CreateSubtaskInput,
   type CreateTaskInput,
+  type Subtask,
+  type SubtaskDTO,
   type Task,
   type TaskDTO,
   type TaskFilters,
@@ -15,15 +19,31 @@ function toStatus(value: string | undefined): TaskStatus {
   return TaskStatus.PENDING;
 }
 
+function toPriority(value: string | undefined): TaskPriority {
+  const upper = (value ?? "").toUpperCase();
+  if (upper in TaskPriority) return upper as TaskPriority;
+  return TaskPriority.MEDIUM;
+}
+
+export function mapSubtask(dto: SubtaskDTO): Subtask {
+  return {
+    id: String(dto.id ?? dto._id ?? ""),
+    title: dto.title ?? "Sem título",
+    completed: Boolean(dto.completed),
+  };
+}
+
 export function mapTask(dto: TaskDTO): Task {
   return {
     id: String(dto.id ?? dto._id ?? ""),
     title: dto.title ?? "Sem título",
     description: dto.description ?? "",
     status: toStatus(dto.status),
+    priority: toPriority(dto.priority),
     dueDate: dto.dueDate ?? null,
     createdAt: dto.createdAt ?? null,
     updatedAt: dto.updatedAt ?? null,
+    subtasks: (dto.subtasks ?? []).map(mapSubtask),
   };
 }
 
@@ -40,7 +60,12 @@ function time(value: string | null): number {
   return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed;
 }
 
-export function applyFilters(tasks: Task[], filters: TaskFilters): Task[] {
+/**
+ * Status e prioridade já são resolvidos pelos endpoints da API
+ * (`/tasks/status/{s}` e `/tasks/priority/{p}`); aqui sobra a busca textual
+ * e a ordenação, que a API não oferece.
+ */
+export function applyFilters(tasks: Task[], filters: Pick<TaskFilters, "search" | "sortBy">): Task[] {
   const search = filters.search.trim().toLowerCase();
   const filtered = search
     ? tasks.filter((task) => task.title.toLowerCase().includes(search))
@@ -95,13 +120,32 @@ export function paginate<T>(items: T[], page: number, pageSize: number): Paginat
   };
 }
 
+export interface ListQuery {
+  status: TaskStatus | "ALL";
+  priority: TaskPriority | "ALL";
+}
 
 export function createTaskService(repository: ITaskRepository = taskRepository) {
   return {
-    async list(status: TaskStatus | "ALL"): Promise<Task[]> {
-      const dtos =
-        status === "ALL" ? await repository.list() : await repository.listByStatus(status);
-      return dtos.map(mapTask);
+    /**
+     * A API não expõe um endpoint combinando status + prioridade: quando os
+     * dois filtros estão ativos, busca por status e refina a prioridade aqui.
+     */
+    async list({ status, priority }: ListQuery): Promise<Task[]> {
+      let dtos: TaskDTO[];
+      if (status !== "ALL") {
+        dtos = await repository.listByStatus(status);
+      } else if (priority !== "ALL") {
+        dtos = await repository.listByPriority(priority);
+      } else {
+        dtos = await repository.list();
+      }
+
+      const tasks = dtos.map(mapTask);
+      if (status !== "ALL" && priority !== "ALL") {
+        return tasks.filter((task) => task.priority === priority);
+      }
+      return tasks;
     },
     async getById(id: string): Promise<Task> {
       return mapTask(await repository.getById(id));
@@ -117,6 +161,17 @@ export function createTaskService(repository: ITaskRepository = taskRepository) 
     },
     async complete(id: string): Promise<Task> {
       return mapTask(await repository.complete(id));
+    },
+    async addSubtask(taskId: string, input: CreateSubtaskInput): Promise<Task> {
+      return mapTask(await repository.addSubtask(taskId, input));
+    },
+    async toggleSubtask(taskId: string, subtaskId: string): Promise<Task> {
+      return mapTask(await repository.toggleSubtask(taskId, subtaskId));
+    },
+    async removeSubtask(taskId: string, subtaskId: string): Promise<Task> {
+      const dto = await repository.removeSubtask(taskId, subtaskId);
+      // 204 sem corpo: relê a tarefa para manter a API como fonte de verdade.
+      return dto ? mapTask(dto) : mapTask(await repository.getById(taskId));
     },
   };
 }
