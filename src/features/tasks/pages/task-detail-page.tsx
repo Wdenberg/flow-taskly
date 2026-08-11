@@ -8,9 +8,11 @@ import { AppLayout } from "@/shared/components/layout/app-layout";
 import { ConfirmDialog } from "@/shared/components/ui/confirm-dialog";
 import { ErrorState } from "@/shared/components/ui/error-state";
 import { StatusBadge } from "@/shared/components/ui/status-badge";
+import { PriorityBadge } from "@/shared/components/ui/priority-badge";
 import { TaskStatus, type Task } from "@/core/types/task";
 import { formatDate } from "@/core/utils/date";
 import { TaskDialog } from "../components/task-dialog";
+import { SubtaskList } from "../components/subtask-list";
 import { useTaskQuery } from "../hooks/use-tasks";
 import { useTaskMutations } from "../hooks/use-task-mutations";
 import type { TaskFormValues } from "../schemas/task.schema";
@@ -29,6 +31,7 @@ export function TaskDetailPage({ taskId }: { taskId: string }) {
           title: values.title,
           description: values.description,
           dueDate: values.dueDate,
+          priority: values.priority as Task["priority"],
           ...(values.status ? { status: values.status as Task["status"] } : {}),
         },
       },
@@ -61,7 +64,10 @@ export function TaskDetailPage({ taskId }: { taskId: string }) {
                 <h2 className="min-w-0 flex-1 text-xl font-semibold tracking-tight break-words">
                   {task.title}
                 </h2>
-                <StatusBadge status={task.status} className="shrink-0" />
+                <div className="flex shrink-0 items-center gap-2">
+                  <PriorityBadge priority={task.priority} />
+                  <StatusBadge status={task.status} />
+                </div>
               </div>
 
               <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground break-words">
@@ -102,6 +108,8 @@ export function TaskDetailPage({ taskId }: { taskId: string }) {
                 </Button>
               </div>
             </article>
+
+            <SubtaskList task={task} />
 
             <TaskDialog
               open={editOpen}
