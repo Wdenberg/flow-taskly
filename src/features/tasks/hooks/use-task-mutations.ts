@@ -33,6 +33,42 @@ export function useTaskMutations() {
     for (const [key, data] of snapshot) queryClient.setQueryData(key, data);
   }
 
+  /** A API devolve a tarefa atualizada: gravamos a resposta no cache (listas + detalhe). */
+  function writeTask(task: Task) {
+    queryClient.setQueryData(taskKeys.detail(task.id), task);
+    const entries = queryClient.getQueriesData<Task[]>({ queryKey: taskKeys.all });
+    for (const [key, data] of entries) {
+      if (Array.isArray(data)) {
+        queryClient.setQueryData(
+          key,
+          data.map((item) => (item.id === task.id ? task : item)),
+        );
+      }
+    }
+  }
+
+  /** Atualização otimista de uma única tarefa (listas + detalhe), com snapshot. */
+  async function patchTask(id: string, updater: (task: Task) => Task) {
+    await queryClient.cancelQueries({ queryKey: taskKeys.all });
+    const detailKey = taskKeys.detail(id);
+    const previousDetail = queryClient.getQueryData<Task>(detailKey);
+    if (previousDetail) queryClient.setQueryData(detailKey, updater(previousDetail));
+    const previous = await patchLists((tasks) =>
+      tasks.map((task) => (task.id === id ? updater(task) : task)),
+    );
+    return { previous, previousDetail, detailKey };
+  }
+
+  function rollbackTask(context?: {
+    previous: ListSnapshot;
+    previousDetail: Task | undefined;
+    detailKey: readonly unknown[];
+  }) {
+    if (!context) return;
+    rollback(context.previous);
+    if (context.previousDetail) queryClient.setQueryData(context.detailKey, context.previousDetail);
+  }
+
   const createTask = useMutation({
     mutationFn: (input: CreateTaskInput) => taskService.create(input),
     onSuccess: () => {
@@ -55,7 +91,10 @@ export function useTaskMutations() {
       rollback(context?.previous);
       toast.error(message(error, "Não foi possível atualizar a tarefa."));
     },
-    onSuccess: () => toast.success("Tarefa atualizada."),
+    onSuccess: (task) => {
+      writeTask(task);
+      toast.success("Tarefa atualizada.");
+    },
     onSettled: () => void invalidate(),
   });
 
@@ -74,19 +113,74 @@ export function useTaskMutations() {
 
   const completeTask = useMutation({
     mutationFn: (id: string) => taskService.complete(id),
-    onMutate: async (id) => {
-      const previous = await patchLists((tasks) =>
-        tasks.map((task) => (task.id === id ? { ...task, status: TaskStatus.COMPLETED } : task)),
-      );
-      return { previous };
-    },
+    onMutate: async (id) =>
+      patchTask(id, (task) => ({ ...task, status: TaskStatus.COMPLETED })),
     onError: (error, _id, context) => {
-      rollback(context?.previous);
+      rollbackTask(context);
       toast.error(message(error, "Não foi possível concluir a tarefa."));
     },
-    onSuccess: () => toast.success("Tarefa concluída."),
+    onSuccess: (task) => {
+      writeTask(task);
+      toast.success("Tarefa concluída.");
+    },
     onSettled: () => void invalidate(),
   });
 
-  return { createTask, updateTask, deleteTask, completeTask };
+  const addSubtask = useMutation({
+    mutationFn: ({ taskId, title }: { taskId: string; title: string }) =>
+      taskService.addSubtask(taskId, { title }),
+    onSuccess: (task) => {
+      writeTask(task);
+      toast.success("Subtarefa adicionada.");
+    },
+    onError: (error) => toast.error(message(error, "Não foi possível adicionar a subtarefa.")),
+    onSettled: () => void invalidate(),
+  });
+
+  const toggleSubtask = useMutation({
+    mutationFn: ({ taskId, subtaskId }: { taskId: string; subtaskId: string }) =>
+      taskService.toggleSubtask(taskId, subtaskId),
+    onMutate: async ({ taskId, subtaskId }) =>
+      patchTask(taskId, (task) => ({
+        ...task,
+        subtasks: task.subtasks.map((sub) =>
+          sub.id === subtaskId ? { ...sub, completed: !sub.completed } : sub,
+        ),
+      })),
+    onError: (error, _vars, context) => {
+      rollbackTask(context);
+      toast.error(message(error, "Não foi possível atualizar a subtarefa."));
+    },
+    onSuccess: (task) => writeTask(task),
+    onSettled: () => void invalidate(),
+  });
+
+  const removeSubtask = useMutation({
+    mutationFn: ({ taskId, subtaskId }: { taskId: string; subtaskId: string }) =>
+      taskService.removeSubtask(taskId, subtaskId),
+    onMutate: async ({ taskId, subtaskId }) =>
+      patchTask(taskId, (task) => ({
+        ...task,
+        subtasks: task.subtasks.filter((sub) => sub.id !== subtaskId),
+      })),
+    onError: (error, _vars, context) => {
+      rollbackTask(context);
+      toast.error(message(error, "Não foi possível remover a subtarefa."));
+    },
+    onSuccess: (task) => {
+      writeTask(task);
+      toast.success("Subtarefa removida.");
+    },
+    onSettled: () => void invalidate(),
+  });
+
+  return {
+    createTask,
+    updateTask,
+    deleteTask,
+    completeTask,
+    addSubtask,
+    toggleSubtask,
+    removeSubtask,
+  };
 }
