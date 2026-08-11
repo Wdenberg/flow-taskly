@@ -48,6 +48,7 @@ export function TasksPage() {
             title: values.title,
             description: values.description,
             dueDate: values.dueDate,
+            priority: values.priority as Task["priority"],
             ...(values.status ? { status: values.status as Task["status"] } : {}),
           },
         },
@@ -57,7 +58,12 @@ export function TasksPage() {
     }
 
     createTask.mutate(
-      { title: values.title, description: values.description, dueDate: values.dueDate },
+      {
+        title: values.title,
+        description: values.description,
+        dueDate: values.dueDate,
+        priority: values.priority as Task["priority"],
+      },
       { onSuccess: () => setDialogOpen(false) },
     );
   };
@@ -77,12 +83,14 @@ export function TasksPage() {
                 title: target.title,
                 description: target.description,
                 dueDate: target.dueDate ?? "",
+                priority: target.priority,
               }),
           },
         });
       },
     });
   };
+
 
   return (
     <AppLayout
