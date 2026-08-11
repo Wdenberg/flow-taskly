@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { TaskStatus, type Task } from "@/core/types/task";
+import { TaskPriority, TaskStatus, type Task } from "@/core/types/task";
 import { applyFilters, buildStats, mapTask, paginate } from "@/features/tasks/services/task.service";
 
 function task(partial: Partial<Task> & { id: string }): Task {
@@ -8,6 +8,8 @@ function task(partial: Partial<Task> & { id: string }): Task {
     title: "Tarefa",
     description: "",
     status: TaskStatus.PENDING,
+    priority: TaskPriority.MEDIUM,
+    subtasks: [],
     dueDate: null,
     createdAt: null,
     updatedAt: null,
@@ -38,23 +40,23 @@ describe("applyFilters", () => {
   ];
 
   it("filtra por busca no título, ignorando maiúsculas", () => {
-    const result = applyFilters(tasks, { status: "ALL", search: "PÃO", sortBy: "title" });
+    const result = applyFilters(tasks, { search: "PÃO", sortBy: "title" });
     expect(result.map((t) => t.id)).toEqual(["1"]);
   });
 
   it("ordena por data limite (sem data vai para o fim)", () => {
-    const result = applyFilters(tasks, { status: "ALL", search: "", sortBy: "dueDate" });
+    const result = applyFilters(tasks, { search: "", sortBy: "dueDate" });
     expect(result.map((t) => t.id)).toEqual(["2", "1", "3"]);
   });
 
   it("ordena por título", () => {
-    const result = applyFilters(tasks, { status: "ALL", search: "", sortBy: "title" });
+    const result = applyFilters(tasks, { search: "", sortBy: "title" });
     expect(result.map((t) => t.title)).toEqual(["Almoçar", "Comprar pão", "Estudar"]);
   });
 
   it("não muta o array original", () => {
     const original = [...tasks];
-    applyFilters(tasks, { status: "ALL", search: "", sortBy: "title" });
+    applyFilters(tasks, { search: "", sortBy: "title" });
     expect(tasks).toEqual(original);
   });
 });

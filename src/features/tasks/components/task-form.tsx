@@ -13,7 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/shared/components/ui/loader";
-import { TASK_STATUSES, TASK_STATUS_LABEL, type Task } from "@/core/types/task";
+import {
+  TASK_PRIORITIES,
+  TASK_PRIORITY_LABEL,
+  TASK_STATUSES,
+  TASK_STATUS_LABEL,
+  type Task,
+} from "@/core/types/task";
 import { toDateInputValue } from "@/core/utils/date";
 import { taskSchema, type TaskFormValues } from "../schemas/task.schema";
 
@@ -37,11 +43,13 @@ export function TaskForm({ task, submitting = false, onSubmit, onCancel }: TaskF
       title: task?.title ?? "",
       description: task?.description ?? "",
       dueDate: toDateInputValue(task?.dueDate) || toDateInputValue(new Date().toISOString()),
+      priority: task?.priority ?? "MEDIUM",
       status: task?.status ?? "PENDING",
     },
   });
 
   const status = watch("status");
+  const priority = watch("priority");
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -70,6 +78,28 @@ export function TaskForm({ task, submitting = false, onSubmit, onCancel }: TaskF
           <Input id="dueDate" type="date" {...register("dueDate")} />
           {errors.dueDate ? (
             <p className="text-xs text-destructive">{errors.dueDate.message}</p>
+          ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="priority">Prioridade</Label>
+          <Select
+            value={priority ?? "MEDIUM"}
+            onValueChange={(value) => setValue("priority", value)}
+          >
+            <SelectTrigger id="priority">
+              <SelectValue placeholder="Selecione" />
+            </SelectTrigger>
+            <SelectContent>
+              {TASK_PRIORITIES.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {TASK_PRIORITY_LABEL[option]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.priority ? (
+            <p className="text-xs text-destructive">{errors.priority.message}</p>
           ) : null}
         </div>
 

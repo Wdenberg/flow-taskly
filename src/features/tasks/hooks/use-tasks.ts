@@ -1,35 +1,40 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import type { Task, TaskStatus } from "@/core/types/task";
+import type { Task, TaskPriority, TaskStatus } from "@/core/types/task";
 import { applyFilters, buildStats, paginate, taskService } from "../services/task.service";
 import { useTaskFiltersStore } from "../store/task-filters.store";
 
 export const taskKeys = {
   all: ["tasks"] as const,
-  list: (status: TaskStatus | "ALL") => ["tasks", "list", status] as const,
+  list: (status: TaskStatus | "ALL", priority: TaskPriority | "ALL") =>
+    ["tasks", "list", status, priority] as const,
   detail: (id: string) => ["tasks", "detail", id] as const,
 };
 
-export function useTasksQuery(status: TaskStatus | "ALL" = "ALL") {
+export function useTasksQuery(
+  status: TaskStatus | "ALL" = "ALL",
+  priority: TaskPriority | "ALL" = "ALL",
+) {
   return useQuery({
-    queryKey: taskKeys.list(status),
-    queryFn: () => taskService.list(status),
+    queryKey: taskKeys.list(status, priority),
+    queryFn: () => taskService.list({ status, priority }),
     staleTime: 30_000,
   });
 }
 
 export function useTasks() {
   const status = useTaskFiltersStore((s) => s.status);
+  const priority = useTaskFiltersStore((s) => s.priority);
   const search = useTaskFiltersStore((s) => s.search);
   const sortBy = useTaskFiltersStore((s) => s.sortBy);
   const page = useTaskFiltersStore((s) => s.page);
   const pageSize = useTaskFiltersStore((s) => s.pageSize);
 
-  const query = useTasksQuery(status);
+  const query = useTasksQuery(status, priority);
   const tasks: Task[] = useMemo(
-    () => applyFilters(query.data ?? [], { status, search, sortBy }),
-    [query.data, status, search, sortBy],
+    () => applyFilters(query.data ?? [], { search, sortBy }),
+    [query.data, search, sortBy],
   );
 
   const pagination = useMemo(() => paginate(tasks, page, pageSize), [tasks, page, pageSize]);
@@ -38,7 +43,7 @@ export function useTasks() {
 }
 
 export function useTaskStats() {
-  const query = useTasksQuery("ALL");
+  const query = useTasksQuery("ALL", "ALL");
   const stats = useMemo(() => buildStats(query.data ?? []), [query.data]);
   return { ...query, stats, tasks: query.data ?? [] };
 }

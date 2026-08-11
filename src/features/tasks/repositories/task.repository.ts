@@ -1,6 +1,11 @@
 import { httpClient } from "@/core/api/http/http-client";
 import { API_ENDPOINTS } from "@/core/api/config/api.config";
-import type { CreateTaskInput, TaskDTO, UpdateTaskInput } from "@/core/types/task";
+import type {
+  CreateSubtaskInput,
+  CreateTaskInput,
+  TaskDTO,
+  UpdateTaskInput,
+} from "@/core/types/task";
 
 type ListResponse = TaskDTO[] | { data?: TaskDTO[]; items?: TaskDTO[]; content?: TaskDTO[] };
 
@@ -19,11 +24,15 @@ function unwrapOne(payload: TaskDTO | { data?: TaskDTO }): TaskDTO {
 export interface ITaskRepository {
   list(): Promise<TaskDTO[]>;
   listByStatus(status: string): Promise<TaskDTO[]>;
+  listByPriority(priority: string): Promise<TaskDTO[]>;
   getById(id: string): Promise<TaskDTO>;
   create(input: CreateTaskInput): Promise<TaskDTO>;
   update(id: string, input: UpdateTaskInput): Promise<TaskDTO>;
   remove(id: string): Promise<void>;
   complete(id: string): Promise<TaskDTO>;
+  addSubtask(taskId: string, input: CreateSubtaskInput): Promise<TaskDTO>;
+  toggleSubtask(taskId: string, subtaskId: string): Promise<TaskDTO>;
+  removeSubtask(taskId: string, subtaskId: string): Promise<TaskDTO | null>;
 }
 
 // O backend (Java/Spring) espera LocalDateTime em `dueDate`.
@@ -50,6 +59,10 @@ export const taskRepository: ITaskRepository = {
     const { data } = await httpClient.get<ListResponse>(API_ENDPOINTS.tasks.byStatus(status));
     return unwrapList(data);
   },
+  async listByPriority(priority) {
+    const { data } = await httpClient.get<ListResponse>(API_ENDPOINTS.tasks.byPriority(priority));
+    return unwrapList(data);
+  },
   async getById(id) {
     const { data } = await httpClient.get<TaskDTO>(API_ENDPOINTS.tasks.byId(id));
     return unwrapOne(data);
@@ -70,6 +83,26 @@ export const taskRepository: ITaskRepository = {
   },
   async complete(id) {
     const { data } = await httpClient.patch<TaskDTO>(API_ENDPOINTS.tasks.complete(id));
+    return unwrapOne(data);
+  },
+  async addSubtask(taskId, input) {
+    const { data } = await httpClient.post<TaskDTO>(API_ENDPOINTS.tasks.subtasks(taskId), {
+      title: input.title.trim(),
+    });
+    return unwrapOne(data);
+  },
+  async toggleSubtask(taskId, subtaskId) {
+    const { data } = await httpClient.patch<TaskDTO>(
+      API_ENDPOINTS.tasks.toggleSubtask(taskId, subtaskId),
+    );
+    return unwrapOne(data);
+  },
+  async removeSubtask(taskId, subtaskId) {
+    // A API pode responder 204 (sem corpo) ou devolver a tarefa atualizada.
+    const { data } = await httpClient.delete<TaskDTO | "">(
+      API_ENDPOINTS.tasks.subtaskById(taskId, subtaskId),
+    );
+    if (!data || typeof data === "string") return null;
     return unwrapOne(data);
   },
 };

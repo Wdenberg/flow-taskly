@@ -6,7 +6,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SearchBar } from "@/shared/components/ui/search-bar";
-import { TASK_STATUSES, TASK_STATUS_LABEL, type TaskStatus } from "@/core/types/task";
+import {
+  TASK_PRIORITIES,
+  TASK_PRIORITY_LABEL,
+  TASK_STATUSES,
+  TASK_STATUS_LABEL,
+  type TaskPriority,
+  type TaskStatus,
+} from "@/core/types/task";
 import { useTaskFiltersStore } from "../store/task-filters.store";
 import type { TaskSortBy } from "@/core/types/task";
 
@@ -18,16 +25,17 @@ const sortLabels: Record<TaskSortBy, string> = {
 };
 
 export function TaskFilters() {
-  const { status, search, sortBy, setStatus, setSearch, setSortBy } = useTaskFiltersStore();
+  const { status, priority, search, sortBy, setStatus, setPriority, setSearch, setSortBy } =
+    useTaskFiltersStore();
 
   return (
-    <div className="flex flex-col gap-3 md:flex-row md:items-center">
+    <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
       <div className="md:max-w-sm md:flex-1">
         <SearchBar value={search} onChange={setSearch} placeholder="Pesquisar tarefas..." />
       </div>
 
       <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus | "ALL")}>
-        <SelectTrigger className="h-10 w-full rounded-xl bg-card md:w-48" aria-label="Filtrar por status">
+        <SelectTrigger className="h-10 w-full rounded-xl bg-card md:w-44" aria-label="Filtrar por status">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -40,8 +48,28 @@ export function TaskFilters() {
         </SelectContent>
       </Select>
 
+      <Select
+        value={priority}
+        onValueChange={(value) => setPriority(value as TaskPriority | "ALL")}
+      >
+        <SelectTrigger
+          className="h-10 w-full rounded-xl bg-card md:w-44"
+          aria-label="Filtrar por prioridade"
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="ALL">Todas as prioridades</SelectItem>
+          {TASK_PRIORITIES.map((option) => (
+            <SelectItem key={option} value={option}>
+              {TASK_PRIORITY_LABEL[option]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       <Select value={sortBy} onValueChange={(value) => setSortBy(value as TaskSortBy)}>
-        <SelectTrigger className="h-10 w-full rounded-xl bg-card md:w-48" aria-label="Ordenar por">
+        <SelectTrigger className="h-10 w-full rounded-xl bg-card md:w-44" aria-label="Ordenar por">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

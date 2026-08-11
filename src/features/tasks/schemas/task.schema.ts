@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { TASK_STATUSES } from "@/core/types/task";
+import { TASK_PRIORITIES, TASK_STATUSES } from "@/core/types/task";
 
 export const taskSchema = z.object({
   title: z
@@ -16,7 +16,18 @@ export const taskSchema = z.object({
     .string()
     .min(1, "Informe a data limite")
     .refine((value) => !Number.isNaN(new Date(value).getTime()), "Data inválida"),
+  priority: z.enum(TASK_PRIORITIES as [string, ...string[]]),
   status: z.enum(TASK_STATUSES as [string, ...string[]]).optional(),
 });
 
 export type TaskFormValues = z.infer<typeof taskSchema>;
+
+export const subtaskSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Informe o título da subtarefa")
+    .max(120, "O título deve ter no máximo 120 caracteres"),
+});
+
+export type SubtaskFormValues = z.infer<typeof subtaskSchema>;
