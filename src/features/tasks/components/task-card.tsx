@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarClock, CheckCircle2, Eye, Pencil, Trash2 } from "lucide-react";
+import { CalendarClock, CheckCircle2, Eye, ListChecks, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/shared/components/ui/status-badge";
+import { PriorityBadge } from "@/shared/components/ui/priority-badge";
 import { TaskStatus, type Task } from "@/core/types/task";
 import { formatDate, isOverdue } from "@/core/utils/date";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,8 @@ interface TaskCardProps {
 export function TaskCard({ task, onEdit, onDelete, onComplete, busy = false }: TaskCardProps) {
   const done = task.status === TaskStatus.COMPLETED;
   const late = !done && isOverdue(task.dueDate);
+  const totalSubtasks = task.subtasks.length;
+  const doneSubtasks = task.subtasks.filter((sub) => sub.completed).length;
 
   return (
     <article className="surface-card flex min-w-0 flex-col gap-4 p-5 transition-shadow duration-200 hover:shadow-lg">
@@ -35,7 +38,10 @@ export function TaskCard({ task, onEdit, onDelete, onComplete, busy = false }: T
             {task.description || "Sem descrição"}
           </p>
         </div>
-        <StatusBadge status={task.status} className="shrink-0" />
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          <StatusBadge status={task.status} />
+          <PriorityBadge priority={task.priority} />
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
@@ -43,6 +49,14 @@ export function TaskCard({ task, onEdit, onDelete, onComplete, busy = false }: T
           <CalendarClock className="size-3.5 shrink-0" />
           <span className="min-w-0">Limite: {formatDate(task.dueDate)}</span>
         </span>
+        {totalSubtasks > 0 ? (
+          <span className="inline-flex items-center gap-1.5">
+            <ListChecks className="size-3.5 shrink-0" aria-hidden="true" />
+            <span className="min-w-0">
+              {doneSubtasks}/{totalSubtasks} concluídas
+            </span>
+          </span>
+        ) : null}
         <span className="min-w-0">Criada em {formatDate(task.createdAt)}</span>
       </div>
 
