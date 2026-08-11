@@ -12,6 +12,11 @@ export const API_ENDPOINTS = {
     byId: (id: string) => `/tasks/${id}`,
     complete: (id: string) => `/tasks/${id}/complete`,
     byStatus: (status: string) => `/tasks/status/${status}`,
+    byPriority: (priority: string) => `/tasks/priority/${priority}`,
+    subtasks: (taskId: string) => `/tasks/${taskId}/subtasks`,
+    subtaskById: (taskId: string, subtaskId: string) => `/tasks/${taskId}/subtasks/${subtaskId}`,
+    toggleSubtask: (taskId: string, subtaskId: string) =>
+      `/tasks/${taskId}/subtasks/${subtaskId}/toggle`,
   },
 } as const;
 
