@@ -87,26 +87,30 @@ httpClient.interceptors.response.use(
     const status = error.response?.status;
     const data = error.response?.data;
 
-    // A API (Spring Security) responde 403 com corpo vazio para token ausente,
-    // inválido ou expirado — tratamos como sessão expirada, igual ao 401.
-    const sessionExpired = status === 401 || (status === 403 && isEmptyBody(data) && Boolean(getToken()));
-
-    if (sessionExpired) {
-      onUnauthorized();
-      const appError = classifyAuthError(401, { message: ERROR_MESSAGES.AUTH.SESSION_EXPIRED });
-      if (import.meta.env.DEV) {
-        console.debug("[http] Sessão expirada detectada:", appError.getDiagnosticInfo());
-      }
-      return Promise.reject(appError);
-    }
-
     if (status === 401 || status === 403) {
-      const appError = classifyAuthError(status, data);
-      if (appError.code === "TOKEN_EXPIRED" || appError.code === "TOKEN_INVALID" || appError.code === "SESSION_NOT_FOUND") {
+      const token = sanitizeToken(getToken());
+      // Só encerramos a sessão quando o token local realmente não serve mais.
+      // A API devolve 401 em erros de servidor (ex.: POST /tasks) mesmo com um
+      // JWT válido — nesse caso derrubar o usuário seria um falso positivo.
+      const localTokenInvalid = !token || isTokenExpired(token);
+
+      if (localTokenInvalid) {
         onUnauthorized();
+        const appError = classifyAuthError(401, { message: ERROR_MESSAGES.AUTH.SESSION_EXPIRED });
+        if (import.meta.env.DEV) {
+          console.debug("[http] Sessão expirada detectada:", appError.getDiagnosticInfo());
+        }
+        return Promise.reject(appError);
       }
+
+      // Token local válido: reporta o erro sem deslogar.
+      const message =
+        status === 403 && isEmptyBody(data)
+          ? ERROR_MESSAGES.AUTH.PERMISSION_DENIED
+          : ERROR_MESSAGES.AUTH.SERVER_REJECTED;
+      const appError = new AppError(message, status, data, "SERVER_REJECTED");
       if (import.meta.env.DEV) {
-        console.debug(`[http] Erro de autenticação (${status}):`, appError.getDiagnosticInfo());
+        console.debug(`[http] ${status} com token local válido (sem logout):`, data);
       }
       return Promise.reject(appError);
     }

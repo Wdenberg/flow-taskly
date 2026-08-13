@@ -7,6 +7,8 @@ export const ERROR_MESSAGES = {
     TOKEN_INVALID: "Formato do token inválido. Reautentique-se.",
     PERMISSION_DENIED: "Acesso negado. Permissão insuficiente.",
     SESSION_NOT_FOUND: "Sessão não encontrada no servidor.",
+    SERVER_REJECTED:
+      "O servidor recusou a operação (401), mas sua sessão continua ativa. Tente novamente em instantes.",
   },
   NETWORK: {
     ERROR: "Erro de conexão. Verifique sua internet e tente novamente.",
