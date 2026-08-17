@@ -81,15 +81,15 @@ function LandingPage() {
               Planeje seu dia, acompanhe suas tarefas e transforme o que precisa ser feito em resultados. Simples, rápido e sempre com você.
             </p>
             
-            <div className="mt-12 flex animate-in fade-in slide-in-from-bottom-10 duration-700 flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button asChild size="lg" className="h-14 px-8 text-lg font-semibold shadow-lg shadow-primary/20">
+            <div className="mt-12 flex animate-in fade-in slide-in-from-bottom-10 duration-700 flex-col items-center justify-center gap-4 sm:flex-row px-4 sm:px-0">
+              <Button asChild size="lg" className="w-full sm:w-auto h-auto min-h-14 py-4 px-8 text-lg font-semibold shadow-lg shadow-primary/20 whitespace-normal text-center">
                 <Link to={isLoggedIn ? "/dashboard" : "/register"}>
                   Comece agora e coloque sua rotina em fluxo
-                  <ArrowRight size={20} className="ml-2" />
+                  <ArrowRight size={20} className="ml-2 inline-block shrink-0" />
                 </Link>
               </Button>
               {!isLoggedIn && (
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg font-semibold">
+                <Button asChild variant="outline" size="lg" className="w-full sm:w-auto h-auto min-h-14 py-4 px-8 text-lg font-semibold">
                   <Link to="/login">Ver demonstração</Link>
                 </Button>
               )}
