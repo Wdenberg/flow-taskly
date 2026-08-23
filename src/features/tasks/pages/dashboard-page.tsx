@@ -1,5 +1,5 @@
 import React from 'react';
-// Estamos no modo build. em /dashborad no modo celular analise os tamanho dos card pra mim
+// Estamos no modo build. em /dashborad nos card Total, Pendentes, Em andamento, Concluídas coloque o tamanho de 150px
 import { Link } from "@tanstack/react-router";
 import { CircleDashed, ListChecks, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
