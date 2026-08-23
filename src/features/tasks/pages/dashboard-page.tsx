@@ -54,12 +54,15 @@ export function DashboardPage() {
     >
       {isLoading ? (
         <div className="space-y-6">
-          <div className="stats-grid">
+          <div className="stats-grid hidden md:grid">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton key={index} className="h-24 rounded-2xl" />
             ))}
           </div>
-          <Skeleton className="h-72 rounded-2xl" />
+          <Skeleton className="h-72 rounded-2xl hidden md:block" />
+          <div className="flex items-center justify-center py-12 md:hidden">
+            <Loader2 className="size-8 animate-spin text-primary" />
+          </div>
         </div>
       ) : isError ? (
         <ErrorState onRetry={() => void refetch()} />
