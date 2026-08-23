@@ -1,5 +1,5 @@
 import React from 'react';
-// Estamos no modo build. em /dashborad nos card Total, Pendentes, Em andamento, Concluídas coloque o tamanho de 150px
+// Estamos no modo build. coloque os cards de estatística um abaixo do outro
 import { Link } from "@tanstack/react-router";
 import { CircleDashed, ListChecks, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
