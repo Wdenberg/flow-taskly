@@ -16,10 +16,10 @@ interface AppLayoutProps {
 export function AppLayout({ title, description, actions, children }: AppLayoutProps) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-dvh w-full bg-background">
+      <div className="flex min-h-dvh w-full overflow-hidden bg-background">
         <AppSidebar />
-        <div className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-10 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur md:px-8">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between gap-3 border-b border-border bg-background/80 px-4 backdrop-blur md:px-8">
             <SidebarTrigger aria-label="Alternar menu lateral" />
             <div className="min-w-0 flex-1">
               <h1
