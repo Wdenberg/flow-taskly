@@ -56,9 +56,9 @@ export function DashboardPage() {
     >
       {isLoading ? (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-2 md:grid-cols-4">
+          <div className="stats-grid grid-cols-1 md:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square md:aspect-auto md:h-24 rounded-xl md:rounded-2xl w-[150px] mx-auto md:w-full" />
+              <Skeleton key={index} className="aspect-square md:aspect-auto md:h-24 rounded-xl md:rounded-2xl w-full mx-auto md:w-full" />
             ))}
           </div>
           <Skeleton className="h-72 rounded-2xl" />
@@ -67,7 +67,7 @@ export function DashboardPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-2 md:grid-cols-4">
+          <div className="stats-grid grid-cols-1 md:grid-cols-4">
             <StatCard label="Total" value={stats.total} icon={ListChecks} />
             <StatCard label="Pendentes" value={stats.pending} icon={CircleDashed} />
             <StatCard label="Em andamento" value={stats.inProgress} icon={Loader2} />
