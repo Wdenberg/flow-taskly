@@ -1,5 +1,5 @@
 import React from 'react';
-// Estamos no modo build. em /dashborad nos card Total, Pendentes, Em andamento, Concluídas coloque o tamanho de 150px
+// Estamos no modo build. coloque os cards de estatística um abaixo do outro
 import { Link } from "@tanstack/react-router";
 import { CircleDashed, ListChecks, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -24,7 +24,7 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5 aspect-square flex-col justify-center text-center md:aspect-auto md:flex-row md:justify-start md:text-left rounded-xl md:rounded-2xl w-[150px] mx-auto md:w-full">
+    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5 flex-col justify-center text-center md:flex-row md:justify-start md:text-left rounded-xl md:rounded-2xl w-full mx-auto md:w-full">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary md:size-11 md:rounded-xl">
         <Icon className="size-4 md:size-5" />
       </span>
@@ -56,9 +56,9 @@ export function DashboardPage() {
     >
       {isLoading ? (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-2 md:grid-cols-4">
+          <div className="stats-grid grid-cols-1 md:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square md:aspect-auto md:h-24 rounded-xl md:rounded-2xl w-[150px] mx-auto md:w-full" />
+              <Skeleton key={index} className="h-24 rounded-xl md:rounded-2xl w-full mx-auto md:w-full" />
             ))}
           </div>
           <Skeleton className="h-72 rounded-2xl" />
@@ -67,7 +67,7 @@ export function DashboardPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-2 md:grid-cols-4">
+          <div className="stats-grid grid-cols-1 md:grid-cols-4">
             <StatCard label="Total" value={stats.total} icon={ListChecks} />
             <StatCard label="Pendentes" value={stats.pending} icon={CircleDashed} />
             <StatCard label="Em andamento" value={stats.inProgress} icon={Loader2} />
