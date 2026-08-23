@@ -22,13 +22,13 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="surface-card flex min-w-0 items-center gap-4 p-5">
+    <div className="surface-card flex min-w-0 items-center gap-3 p-4 md:gap-4 md:p-5">
       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
         <Icon className="size-5" />
       </span>
       <div className="min-w-0">
         <p className="truncate text-sm text-muted-foreground">{label}</p>
-        <p className="text-2xl font-semibold tracking-tight">{value}</p>
+        <p className="text-xl font-semibold tracking-tight md:text-2xl">{value}</p>
       </div>
     </div>
   );
@@ -44,7 +44,7 @@ export function DashboardPage() {
       title={`Olá, ${user?.name?.split(" ")[0] ?? "bem-vindo"}`}
       description="Um resumo rápido do seu progresso."
       actions={
-        <Button asChild>
+        <Button asChild className="hidden md:flex">
           <Link to="/tasks">
             Ver tarefas
             <ArrowRight className="ml-1.5 size-4" />
@@ -65,14 +65,14 @@ export function DashboardPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-6">
-          <div className="stats-grid">
+          <div className="stats-grid hidden md:grid">
             <StatCard label="Total" value={stats.total} icon={ListChecks} />
             <StatCard label="Pendentes" value={stats.pending} icon={CircleDashed} />
             <StatCard label="Em andamento" value={stats.inProgress} icon={Loader2} />
             <StatCard label="Concluídas" value={stats.completed} icon={CheckCircle2} />
           </div>
 
-          <section className="surface-card min-w-0 p-5 md:p-6">
+          <section className="surface-card min-w-0 p-5 md:p-6 hidden md:block">
             <div className="mb-4 flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold">Tarefas recentes</h2>
               <Button asChild variant="ghost" size="sm">
