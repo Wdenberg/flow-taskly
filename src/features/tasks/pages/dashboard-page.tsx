@@ -1,15 +1,5 @@
 import React from 'react';
-// Estamos no modo build. Por favor, ajuste o código do layout (HTML/CSS ou Tailwind) para corrigir o problema de overflow horizontal. Atualmente, o conteúdo está sendo cortado no lado direito da tela (o botão no cabeçalho e o card de 'Tarefas recentes' estão vazando para fora do viewport).
-
-// Siga estas instruções para ajustar o código:
-
-// Adicione um controle de largura no container principal (ex: w-full, max-w-md, mx-auto e overflow-hidden ou box-border) para garantir que nada ultrapasse 100% da largura da tela.
-
-// No cabeçalho, certifique-se de usar Flexbox (ex: flex justify-between items-center) com um padding adequado para que o texto da esquerda e o ícone da direita fiquem com um respiro nas bordas, totalmente visíveis.
-
-// Centralize horizontalmente o container que envolve os quatro cartões de estatísticas (Total, Pendentes, Em andamento, Concluídas). Se for um layout em coluna, use flex flex-col items-center.
-
-// Garanta que o card de 'Tarefas recentes' na parte inferior tenha margens laterais consistentes e respeite os limites do container pai.
+// Estamos no modo build. coloque os cards de estatística um ao ao lado do outro
 import { Link } from "@tanstack/react-router";
 import { CircleDashed, ListChecks, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -34,7 +24,7 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5 flex-col justify-center text-center md:flex-row md:justify-start md:text-left rounded-xl md:rounded-2xl w-[150px] aspect-square mx-auto md:w-full md:aspect-auto">
+    <div className="surface-card flex min-w-0 items-center gap-2 p-2 flex-col justify-center text-center rounded-xl w-full aspect-square">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary md:size-11 md:rounded-xl">
         <Icon className="size-4 md:size-5" />
       </span>
@@ -66,9 +56,9 @@ export function DashboardPage() {
     >
       {isLoading ? (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-1 md:grid-cols-4 flex flex-col items-center gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="rounded-xl md:rounded-2xl w-[150px] aspect-square mx-auto md:w-full md:aspect-auto md:h-24" />
+              <Skeleton key={index} className="rounded-xl w-full aspect-square" />
             ))}
           </div>
           <Skeleton className="h-72 rounded-2xl" />
@@ -77,7 +67,7 @@ export function DashboardPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-1 md:grid-cols-4 flex flex-col items-center gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCard label="Total" value={stats.total} icon={ListChecks} />
             <StatCard label="Pendentes" value={stats.pending} icon={CircleDashed} />
             <StatCard label="Em andamento" value={stats.inProgress} icon={Loader2} />
