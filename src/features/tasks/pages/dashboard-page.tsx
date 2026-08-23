@@ -84,7 +84,7 @@ export function DashboardPage() {
             <StatCard label="Concluídas" value={stats.completed} icon={CheckCircle2} />
           </div>
 
-          <section className="surface-card min-w-0 p-5 md:p-6">
+          <section className="surface-card min-w-0 p-5 md:p-6 mx-0">
             <div className="mb-4 flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold">Tarefas recentes</h2>
               <Button asChild variant="ghost" size="sm">

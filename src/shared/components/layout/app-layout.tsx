@@ -15,7 +15,7 @@ interface AppLayoutProps {
 // então aqui só cuidamos do chrome da aplicação.
 export function AppLayout({ title, description, actions, children }: AppLayoutProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="overflow-hidden">
       <div className="flex min-h-dvh w-full overflow-hidden bg-background">
         <AppSidebar />
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
