@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import React from 'react';
+// Estamos no modo build. em /dashborad no modo celular analise os tamanho dos card pra mim
 import { CircleDashed, ListChecks, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
