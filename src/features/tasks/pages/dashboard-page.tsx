@@ -110,6 +110,21 @@ export function DashboardPage() {
               </ul>
             )}
           </section>
+          
+          <div className="flex flex-col items-center justify-center gap-4 py-12 text-center md:hidden">
+            <div className="flex size-16 items-center justify-center rounded-full bg-accent text-primary">
+              <ListChecks className="size-8" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">Resumo simplificado</h3>
+              <p className="text-sm text-muted-foreground">
+                Acesse a aba de tarefas para gerenciar sua rotina.
+              </p>
+            </div>
+            <Button asChild className="mt-2 w-full max-w-[200px]">
+              <Link to="/tasks">Ir para Tarefas</Link>
+            </Button>
+          </div>
         </div>
       )}
     </AppLayout>
