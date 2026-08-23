@@ -22,13 +22,13 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="surface-card flex min-w-0 items-center gap-3 p-4 md:gap-4 md:p-5">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
-        <Icon className="size-5" />
+    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary md:size-11 md:rounded-xl">
+        <Icon className="size-4 md:size-5" />
       </span>
       <div className="min-w-0">
         <p className="truncate text-sm text-muted-foreground">{label}</p>
-        <p className="text-xl font-semibold tracking-tight md:text-2xl">{value}</p>
+        <p className="text-lg font-semibold tracking-tight md:text-2xl">{value}</p>
       </div>
     </div>
   );
