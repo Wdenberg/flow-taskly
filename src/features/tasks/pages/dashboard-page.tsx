@@ -1,5 +1,5 @@
 import React from 'react';
-// Estamos no modo build. em /dashborad no modo celular analise os tamanho dos card pra mim
+// Estamos no modo build. em /dashborad nos card Total, Pendentes, Em andamento, Concluídas coloque o tamanho de 150px
 import { Link } from "@tanstack/react-router";
 import { CircleDashed, ListChecks, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -24,7 +24,7 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5 aspect-square flex-col justify-center text-center md:aspect-auto md:flex-row md:justify-start md:text-left rounded-xl md:rounded-2xl">
+    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5 aspect-square flex-col justify-center text-center md:aspect-auto md:flex-row md:justify-start md:text-left rounded-xl md:rounded-2xl w-[150px] mx-auto md:w-full">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary md:size-11 md:rounded-xl">
         <Icon className="size-4 md:size-5" />
       </span>
@@ -58,7 +58,7 @@ export function DashboardPage() {
         <div className="space-y-6">
           <div className="stats-grid grid-cols-2 md:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square md:aspect-auto md:h-24 rounded-xl md:rounded-2xl" />
+              <Skeleton key={index} className="aspect-square md:aspect-auto md:h-24 rounded-xl md:rounded-2xl w-[150px] mx-auto md:w-full" />
             ))}
           </div>
           <Skeleton className="h-72 rounded-2xl" />
