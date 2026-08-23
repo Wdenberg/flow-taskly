@@ -58,7 +58,7 @@ export function DashboardPage() {
         <div className="space-y-6">
           <div className="stats-grid grid-cols-1 md:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square md:aspect-auto md:h-24 rounded-xl md:rounded-2xl w-full mx-auto md:w-full" />
+              <Skeleton key={index} className="h-24 rounded-xl md:rounded-2xl w-full mx-auto md:w-full" />
             ))}
           </div>
           <Skeleton className="h-72 rounded-2xl" />
