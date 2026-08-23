@@ -44,7 +44,7 @@ export function DashboardPage() {
       title={`Olá, ${user?.name?.split(" ")[0] ?? "bem-vindo"}`}
       description="Um resumo rápido do seu progresso."
       actions={
-        <Button asChild className="hidden md:flex">
+        <Button asChild>
           <Link to="/tasks">
             Ver tarefas
             <ArrowRight className="ml-1.5 size-4" />
