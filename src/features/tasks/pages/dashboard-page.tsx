@@ -24,7 +24,7 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5 aspect-square flex-col justify-center text-center md:aspect-auto md:flex-row md:justify-start md:text-left rounded-xl md:rounded-2xl w-[150px] mx-auto md:w-full">
+    <div className="surface-card flex min-w-0 items-center gap-2 p-3 md:gap-4 md:p-5 aspect-square flex-col justify-center text-center md:aspect-auto md:flex-row md:justify-start md:text-left rounded-xl md:rounded-2xl w-full mx-auto md:w-full">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary md:size-11 md:rounded-xl">
         <Icon className="size-4 md:size-5" />
       </span>
