@@ -1,5 +1,15 @@
 import React from 'react';
-// Estamos no modo build. Olha como esta o Layout no celular
+// Estamos no modo build. Por favor, ajuste o código do layout (HTML/CSS ou Tailwind) para corrigir o problema de overflow horizontal. Atualmente, o conteúdo está sendo cortado no lado direito da tela (o botão no cabeçalho e o card de 'Tarefas recentes' estão vazando para fora do viewport).
+
+// Siga estas instruções para ajustar o código:
+
+// Adicione um controle de largura no container principal (ex: w-full, max-w-md, mx-auto e overflow-hidden ou box-border) para garantir que nada ultrapasse 100% da largura da tela.
+
+// No cabeçalho, certifique-se de usar Flexbox (ex: flex justify-between items-center) com um padding adequado para que o texto da esquerda e o ícone da direita fiquem com um respiro nas bordas, totalmente visíveis.
+
+// Centralize horizontalmente o container que envolve os quatro cartões de estatísticas (Total, Pendentes, Em andamento, Concluídas). Se for um layout em coluna, use flex flex-col items-center.
+
+// Garanta que o card de 'Tarefas recentes' na parte inferior tenha margens laterais consistentes e respeite os limites do container pai.
 import { Link } from "@tanstack/react-router";
 import { CircleDashed, ListChecks, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -56,7 +66,7 @@ export function DashboardPage() {
     >
       {isLoading ? (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-1 md:grid-cols-4">
+          <div className="stats-grid grid-cols-1 md:grid-cols-4 flex flex-col items-center gap-6">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton key={index} className="rounded-xl md:rounded-2xl w-[150px] aspect-square mx-auto md:w-full md:aspect-auto md:h-24" />
             ))}
@@ -67,14 +77,14 @@ export function DashboardPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-6">
-          <div className="stats-grid grid-cols-1 md:grid-cols-4">
+          <div className="stats-grid grid-cols-1 md:grid-cols-4 flex flex-col items-center gap-6">
             <StatCard label="Total" value={stats.total} icon={ListChecks} />
             <StatCard label="Pendentes" value={stats.pending} icon={CircleDashed} />
             <StatCard label="Em andamento" value={stats.inProgress} icon={Loader2} />
             <StatCard label="Concluídas" value={stats.completed} icon={CheckCircle2} />
           </div>
 
-          <section className="surface-card min-w-0 p-5 md:p-6">
+          <section className="surface-card min-w-0 p-5 md:p-6 mx-0">
             <div className="mb-4 flex items-center justify-between gap-2">
               <h2 className="text-base font-semibold">Tarefas recentes</h2>
               <Button asChild variant="ghost" size="sm">

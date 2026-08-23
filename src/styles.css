@@ -261,7 +261,9 @@
 /* Grid responsivo para cards de estatísticas do dashboard */
 @utility stats-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 100%;
   gap: 1rem;
 }
 
