@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "title": "TaskFlow — Organize suas tarefas. Simplifique seu dia.",
+    "description": "O Task Flow é o app de tarefas que mantém tudo organizado em um só lugar — no navegador, Android e iOS."
+  },
+  "hero": {
+    "title": "Task Flow",
+    "tagline": "Organize suas tarefas. Simplifique seu dia.",
+    "description": "O Task Flow é o app de tarefas que mantém tudo organizado em um só lugar — no navegador, Android e iOS (futuro).",
+    "secondary": "Planeje seu dia, acompanhe suas tarefas e transforme o que precisa ser feito em resultados. Simples, rápido e sempre com você.",
+    "cta": "Comece agora e coloque sua rotina em fluxo",
+    "demo": "Ver demonstração"
+  },
+  "features": {
+    "web": {
+      "title": "Sempre Web",
+      "description": "Acesse suas tarefas de qualquer lugar através do navegador com sincronização em tempo real."
+    },
+    "mobile": {
+      "title": "Mobile First",
+      "description": "Interface pensada para fluidez em dispositivos Android e iOS, garantindo produtividade móvel."
+    },
+    "performance": {
+      "title": "Performance",
+      "description": "Criado com as tecnologias mais modernas para ser extremamente rápido e responsivo."
+    }
+  },
+  "footer": {
+    "rights": "© {{year}} TaskFlow. Todos os direitos reservados.",
+    "terms": "Termos",
+    "privacy": "Privacidade",
+    "contact": "Contato"
+  }
+}

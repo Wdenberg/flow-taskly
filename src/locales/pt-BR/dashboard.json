@@ -1,0 +1,17 @@
+{
+  "greeting": "Olá, {{name}}",
+  "greetingFallback": "bem-vindo",
+  "description": "Um resumo rápido do seu progresso.",
+  "viewTasks": "Ver tarefas",
+  "stats": {
+    "total": "Total",
+    "pending": "Pendentes",
+    "inProgress": "Em andamento",
+    "completed": "Concluídas"
+  },
+  "recent": {
+    "title": "Tarefas recentes",
+    "emptyTitle": "Nada por aqui ainda",
+    "emptyDescription": "Crie sua primeira tarefa para acompanhar seu progresso."
+  }
+}

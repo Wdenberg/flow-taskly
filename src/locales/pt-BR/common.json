@@ -1,0 +1,47 @@
+{
+  "appName": "TaskFlow",
+  "actions": {
+    "edit": "Editar",
+    "delete": "Excluir",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "retry": "Tentar novamente",
+    "undo": "Desfazer",
+    "add": "Adicionar",
+    "details": "Detalhes",
+    "complete": "Concluir",
+    "viewAll": "Ver todas",
+    "goHome": "Ir para o início",
+    "tryAgain": "Tentar novamente"
+  },
+  "search": {
+    "placeholder": "Pesquisar...",
+    "clear": "Limpar pesquisa"
+  },
+  "theme": {
+    "activateLight": "Ativar tema claro",
+    "activateDark": "Ativar tema escuro",
+    "light": "Tema claro",
+    "dark": "Tema escuro"
+  },
+  "language": {
+    "label": "Idioma",
+    "select": "Selecionar idioma",
+    "pt-BR": "Português (BR)",
+    "en": "English",
+    "es": "Español"
+  },
+  "pagination": {
+    "label": "Paginação de tarefas",
+    "showing": "Mostrando {{first}}–{{last}} de {{total}} tarefas",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "previousAria": "Página anterior",
+    "nextAria": "Próxima página",
+    "position": "{{page}} / {{totalPages}}"
+  },
+  "coldStart": "O servidor da API está iniciando (hospedagem gratuita hiberna quando ociosa). Isso pode levar até 30 segundos no primeiro acesso — em seguida tudo fica rápido.",
+  "sidebar": {
+    "toggle": "Alternar menu lateral"
+  }
+}
