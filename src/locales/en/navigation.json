@@ -1,0 +1,9 @@
+{
+  "group": "Navigation",
+  "dashboard": "Dashboard",
+  "tasks": "Tasks",
+  "logout": "Sign out",
+  "goToApp": "Go to app",
+  "login": "Sign in",
+  "register": "Get started"
+}

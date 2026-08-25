@@ -1,0 +1,107 @@
+{
+  "page": {
+    "title": "Tasks",
+    "description": "Create, filter and track all of your tasks.",
+    "new": "New task",
+    "emptyTitle": "No tasks found",
+    "emptyDescription": "Adjust the filters or create your first task to get started.",
+    "emptyAction": "Create task"
+  },
+  "detail": {
+    "title": "Task details",
+    "description": "View and manage this task.",
+    "back": "Back to tasks",
+    "notFoundTitle": "Task not found",
+    "notFoundMessage": "We couldn't load this task.",
+    "createdAt": "Created on {{date}}",
+    "updatedAt": "Updated on {{date}}"
+  },
+  "card": {
+    "noDescription": "No description",
+    "dueDate": "Due: {{date}}",
+    "createdAt": "Created on {{date}}",
+    "subtasksDone": "{{done}}/{{total}} completed"
+  },
+  "filters": {
+    "searchPlaceholder": "Search tasks...",
+    "statusAria": "Filter by status",
+    "priorityAria": "Filter by priority",
+    "sortAria": "Sort by",
+    "allStatuses": "All statuses",
+    "allPriorities": "All priorities"
+  },
+  "sort": {
+    "dueDate": "Due date",
+    "createdAt": "Most recent",
+    "status": "Status",
+    "title": "Title (A-Z)"
+  },
+  "dialog": {
+    "editTitle": "Edit task",
+    "newTitle": "New task",
+    "editDescription": "Update your task information.",
+    "newDescription": "Describe what needs to be done and set a deadline."
+  },
+  "form": {
+    "title": "Title",
+    "titlePlaceholder": "e.g. Review proposal",
+    "description": "Description",
+    "descriptionPlaceholder": "Task details (optional)",
+    "dueDate": "Due date",
+    "priority": "Priority",
+    "status": "Status",
+    "selectPlaceholder": "Select",
+    "save": "Save changes",
+    "create": "Create task"
+  },
+  "validation": {
+    "titleMin": "Title must be at least 3 characters",
+    "titleMax": "Title must be at most 120 characters",
+    "descriptionMax": "Description must be at most 500 characters",
+    "dueDateRequired": "Enter the due date",
+    "dueDateInvalid": "Invalid date",
+    "subtaskTitleRequired": "Enter the subtask title",
+    "subtaskTitleInvalid": "Invalid title"
+  },
+  "delete": {
+    "title": "Delete task",
+    "confirmDescription": "Are you sure you want to delete \"{{title}}\"? You can undo it right after.",
+    "irreversible": "This action cannot be undone."
+  },
+  "subtasks": {
+    "title": "Subtasks",
+    "progress": "{{done}} of {{total}} completed",
+    "empty": "No subtasks",
+    "newPlaceholder": "New subtask",
+    "newAria": "New subtask title",
+    "toggleAria": "Toggle subtask {{title}}",
+    "deleteAria": "Delete subtask {{title}}"
+  },
+  "status": {
+    "PENDING": "Pending",
+    "IN_PROGRESS": "In progress",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  },
+  "priority": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "URGENT": "Urgent"
+  },
+  "toast": {
+    "created": "Task created successfully.",
+    "updated": "Task updated.",
+    "completed": "Task completed.",
+    "deleted": "\"{{title}}\" deleted.",
+    "subtaskAdded": "Subtask added.",
+    "subtaskRemoved": "Subtask removed.",
+    "createError": "We couldn't create the task.",
+    "updateError": "We couldn't update the task.",
+    "deleteError": "We couldn't delete the task.",
+    "completeError": "We couldn't complete the task.",
+    "subtaskAddError": "We couldn't add the subtask.",
+    "subtaskUpdateError": "We couldn't update the subtask.",
+    "subtaskRemoveError": "We couldn't remove the subtask."
+  }
+}

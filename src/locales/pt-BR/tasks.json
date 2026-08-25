@@ -1,0 +1,107 @@
+{
+  "page": {
+    "title": "Tarefas",
+    "description": "Crie, filtre e acompanhe todas as suas tarefas.",
+    "new": "Nova tarefa",
+    "emptyTitle": "Nenhuma tarefa encontrada",
+    "emptyDescription": "Ajuste os filtros ou crie sua primeira tarefa para começar.",
+    "emptyAction": "Criar tarefa"
+  },
+  "detail": {
+    "title": "Detalhes da tarefa",
+    "description": "Visualize e gerencie esta tarefa.",
+    "back": "Voltar para tarefas",
+    "notFoundTitle": "Tarefa não encontrada",
+    "notFoundMessage": "Não foi possível carregar esta tarefa.",
+    "createdAt": "Criada em {{date}}",
+    "updatedAt": "Atualizada em {{date}}"
+  },
+  "card": {
+    "noDescription": "Sem descrição",
+    "dueDate": "Limite: {{date}}",
+    "createdAt": "Criada em {{date}}",
+    "subtasksDone": "{{done}}/{{total}} concluídas"
+  },
+  "filters": {
+    "searchPlaceholder": "Pesquisar tarefas...",
+    "statusAria": "Filtrar por status",
+    "priorityAria": "Filtrar por prioridade",
+    "sortAria": "Ordenar por",
+    "allStatuses": "Todos os status",
+    "allPriorities": "Todas as prioridades"
+  },
+  "sort": {
+    "dueDate": "Data limite",
+    "createdAt": "Mais recentes",
+    "status": "Status",
+    "title": "Título (A-Z)"
+  },
+  "dialog": {
+    "editTitle": "Editar tarefa",
+    "newTitle": "Nova tarefa",
+    "editDescription": "Atualize as informações da sua tarefa.",
+    "newDescription": "Descreva o que precisa ser feito e defina um prazo."
+  },
+  "form": {
+    "title": "Título",
+    "titlePlaceholder": "Ex.: Revisar proposta",
+    "description": "Descrição",
+    "descriptionPlaceholder": "Detalhes da tarefa (opcional)",
+    "dueDate": "Data limite",
+    "priority": "Prioridade",
+    "status": "Status",
+    "selectPlaceholder": "Selecione",
+    "save": "Salvar alterações",
+    "create": "Criar tarefa"
+  },
+  "validation": {
+    "titleMin": "O título deve ter ao menos 3 caracteres",
+    "titleMax": "O título deve ter no máximo 120 caracteres",
+    "descriptionMax": "A descrição deve ter no máximo 500 caracteres",
+    "dueDateRequired": "Informe a data limite",
+    "dueDateInvalid": "Data inválida",
+    "subtaskTitleRequired": "Informe o título da subtarefa",
+    "subtaskTitleInvalid": "Título inválido"
+  },
+  "delete": {
+    "title": "Excluir tarefa",
+    "confirmDescription": "Tem certeza que deseja excluir \"{{title}}\"? Você poderá desfazer logo após a exclusão.",
+    "irreversible": "Esta ação não pode ser desfeita."
+  },
+  "subtasks": {
+    "title": "Subtarefas",
+    "progress": "{{done}} de {{total}} concluídas",
+    "empty": "Nenhuma subtarefa",
+    "newPlaceholder": "Nova subtarefa",
+    "newAria": "Título da nova subtarefa",
+    "toggleAria": "Alternar subtarefa {{title}}",
+    "deleteAria": "Excluir subtarefa {{title}}"
+  },
+  "status": {
+    "PENDING": "Pendente",
+    "IN_PROGRESS": "Em andamento",
+    "COMPLETED": "Concluída",
+    "CANCELLED": "Cancelada"
+  },
+  "priority": {
+    "LOW": "Baixa",
+    "MEDIUM": "Média",
+    "HIGH": "Alta",
+    "URGENT": "Urgente"
+  },
+  "toast": {
+    "created": "Tarefa criada com sucesso.",
+    "updated": "Tarefa atualizada.",
+    "completed": "Tarefa concluída.",
+    "deleted": "\"{{title}}\" excluída.",
+    "subtaskAdded": "Subtarefa adicionada.",
+    "subtaskRemoved": "Subtarefa removida.",
+    "createError": "Não foi possível criar a tarefa.",
+    "updateError": "Não foi possível atualizar a tarefa.",
+    "deleteError": "Não foi possível excluir a tarefa.",
+    "completeError": "Não foi possível concluir a tarefa.",
+    "subtaskAddError": "Não foi possível adicionar a subtarefa.",
+    "subtaskUpdateError": "Não foi possível atualizar a subtarefa.",
+    "subtaskRemoveError": "Não foi possível remover a subtarefa."
+  }
+}

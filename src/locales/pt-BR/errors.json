@@ -1,0 +1,37 @@
+{
+  "auth": {
+    "invalidToken": "Sua sessão expirou. Por favor, faça login novamente.",
+    "sessionExpired": "Sua sessão expirou. Por favor, faça login novamente.",
+    "notAuthenticated": "Você precisa estar autenticado para continuar.",
+    "tokenExpired": "Sua sessão expirou. Faça login novamente.",
+    "tokenInvalid": "Formato do token inválido. Reautentique-se.",
+    "permissionDenied": "Acesso negado. Permissão insuficiente.",
+    "sessionNotFound": "Sessão não encontrada no servidor.",
+    "serverRejected": "O servidor recusou a operação (401), mas sua sessão continua ativa. Tente novamente em instantes."
+  },
+  "network": {
+    "error": "Erro de conexão. Verifique sua internet e tente novamente."
+  },
+  "http": {
+    "generic": "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+    "notFound": "O recurso solicitado não foi encontrado.",
+    "serverError": "Erro interno do servidor. Tente novamente mais tarde."
+  },
+  "validation": {
+    "requiredField": "Este campo é obrigatório.",
+    "invalidEmail": "Digite um e-mail válido.",
+    "passwordMinLength": "A senha deve ter pelo menos 6 caracteres."
+  },
+  "state": {
+    "title": "Não foi possível carregar",
+    "message": "Ocorreu um erro ao buscar os dados. Tente novamente."
+  },
+  "notFoundPage": {
+    "title": "Página não encontrada",
+    "description": "A página que você procura não existe ou foi movida."
+  },
+  "boundary": {
+    "title": "Esta página não carregou",
+    "description": "Algo deu errado do nosso lado. Você pode tentar novamente ou voltar ao início."
+  }
+}
