@@ -1,0 +1,47 @@
+{
+  "appName": "TaskFlow",
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "retry": "Try again",
+    "undo": "Undo",
+    "add": "Add",
+    "details": "Details",
+    "complete": "Complete",
+    "viewAll": "View all",
+    "goHome": "Go home",
+    "tryAgain": "Try again"
+  },
+  "search": {
+    "placeholder": "Search...",
+    "clear": "Clear search"
+  },
+  "theme": {
+    "activateLight": "Switch to light theme",
+    "activateDark": "Switch to dark theme",
+    "light": "Light theme",
+    "dark": "Dark theme"
+  },
+  "language": {
+    "label": "Language",
+    "select": "Select language",
+    "pt-BR": "Português (BR)",
+    "en": "English",
+    "es": "Español"
+  },
+  "pagination": {
+    "label": "Task pagination",
+    "showing": "Showing {{first}}–{{last}} of {{total}} tasks",
+    "previous": "Previous",
+    "next": "Next",
+    "previousAria": "Previous page",
+    "nextAria": "Next page",
+    "position": "{{page}} / {{totalPages}}"
+  },
+  "coldStart": "The API server is starting up (free hosting sleeps when idle). This can take up to 30 seconds on first access — after that everything is fast.",
+  "sidebar": {
+    "toggle": "Toggle sidebar"
+  }
+}

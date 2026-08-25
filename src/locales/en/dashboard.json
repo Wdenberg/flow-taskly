@@ -1,0 +1,17 @@
+{
+  "greeting": "Hello, {{name}}",
+  "greetingFallback": "welcome",
+  "description": "A quick summary of your progress.",
+  "viewTasks": "View tasks",
+  "stats": {
+    "total": "Total",
+    "pending": "Pending",
+    "inProgress": "In progress",
+    "completed": "Completed"
+  },
+  "recent": {
+    "title": "Recent tasks",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "Create your first task to start tracking your progress."
+  }
+}

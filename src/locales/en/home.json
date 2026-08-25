@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "title": "TaskFlow — Organize your tasks. Simplify your day.",
+    "description": "Task Flow is the task app that keeps everything organized in one place — on the web, Android and iOS."
+  },
+  "hero": {
+    "title": "Task Flow",
+    "tagline": "Organize your tasks. Simplify your day.",
+    "description": "Task Flow is the task app that keeps everything organized in one place — on the web, Android and iOS (coming soon).",
+    "secondary": "Plan your day, track your tasks and turn what needs to be done into results. Simple, fast and always with you.",
+    "cta": "Get started and put your routine in flow",
+    "demo": "See demo"
+  },
+  "features": {
+    "web": {
+      "title": "Always on the web",
+      "description": "Access your tasks from anywhere in the browser with real-time sync."
+    },
+    "mobile": {
+      "title": "Mobile first",
+      "description": "An interface designed to feel fluid on Android and iOS, keeping you productive on the go."
+    },
+    "performance": {
+      "title": "Performance",
+      "description": "Built with the most modern technologies to be extremely fast and responsive."
+    }
+  },
+  "footer": {
+    "rights": "© {{year}} TaskFlow. All rights reserved.",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contact": "Contact"
+  }
+}

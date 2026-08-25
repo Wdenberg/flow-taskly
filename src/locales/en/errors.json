@@ -1,0 +1,37 @@
+{
+  "auth": {
+    "invalidToken": "Your session expired. Please sign in again.",
+    "sessionExpired": "Your session expired. Please sign in again.",
+    "notAuthenticated": "You need to be signed in to continue.",
+    "tokenExpired": "Your session expired. Please sign in again.",
+    "tokenInvalid": "Invalid token format. Please sign in again.",
+    "permissionDenied": "Access denied. Insufficient permissions.",
+    "sessionNotFound": "Session not found on the server.",
+    "serverRejected": "The server rejected the operation (401), but your session is still active. Please try again shortly."
+  },
+  "network": {
+    "error": "Connection error. Check your internet and try again."
+  },
+  "http": {
+    "generic": "An unexpected error occurred. Please try again later.",
+    "notFound": "The requested resource was not found.",
+    "serverError": "Internal server error. Please try again later."
+  },
+  "validation": {
+    "requiredField": "This field is required.",
+    "invalidEmail": "Enter a valid email.",
+    "passwordMinLength": "Password must be at least 6 characters."
+  },
+  "state": {
+    "title": "Couldn't load",
+    "message": "Something went wrong while fetching the data. Please try again."
+  },
+  "notFoundPage": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved."
+  },
+  "boundary": {
+    "title": "This page didn't load",
+    "description": "Something went wrong on our end. You can try refreshing or head back home."
+  }
+}
